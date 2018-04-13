@@ -1,3 +1,9 @@
+
+__author__ = "Andrew Petrov"
+__maintainer__ = "Andrew Petrov"
+__email__ = "marsofandrew@gmail.com"
+
+
 class AnsibleFunction:
     def __init__(self, name, function_ptr, required=False, default=None, type_of_params='dict'):
         self.name = name

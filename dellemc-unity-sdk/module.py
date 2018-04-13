@@ -1,6 +1,10 @@
 from ansible.module_utils.basic import AnsibleModule
 from .unity import Unity
 
+__author__ = "Andrew Petrov"
+__maintainer__ = "Andrew Petrov"
+__email__ = "marsofandrew@gmail.com"
+
 
 def run(array_of_ansible_functions):
     arguments = dict()
@@ -19,5 +23,7 @@ def run_module(ansible_module, array_of_ansible_functions):
         element = array_of_ansible_functions[i]
         if ansible_module.params[element.get_name()]:
             element.run(ansible_module.params[element.get_name()], unity)
-
-    # TODO: print information
+            ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
+                                     update_results=unity.updateResults)
+            unity.reset()
+    del unity
