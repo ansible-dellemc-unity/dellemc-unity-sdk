@@ -1,6 +1,5 @@
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.dellemc_unity_sdk.unity import Unity
-from ansible.module_utils.dellemc_unity_sdk.ansible_function import AnsibleFunction
+from .unity import Unity
 
 
 def run(array_of_ansible_functions):
