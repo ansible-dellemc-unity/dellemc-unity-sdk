@@ -495,66 +495,9 @@ unity_update_results:
 
 import requests, json, re
 
-
 __author__ = "Andrew Petrov"
 __maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
-
-actionAttribs = {
-    'create': {
-        'alertConfigSNMPTarget': {'address': 'targetAddress'},
-        'capabilityProfile': ['name', 'pool'],
-        'cifsServer': ['nasServer'],
-        'pool': ['name'],
-        'user': ['name']
-    },
-    'modify': {
-        'alertConfig': {
-            'locale': 'alertLocale',
-            'isThresholdAlertsEnabled': 'isThresholdAlertsEnabled',
-            'minEmailNotificationSeverity': 'minEmailNotificationSeverity',
-            'minSNMPTrapNotificationSeverity': 'minSNMPTrapNotificationSeverity',
-            'emailFromAddress': 'emailFromAddress',
-            'destinationEmails': 'destinationEmails'
-        },
-        'alertConfigSNMPTarget': {
-            'address': 'targetAddress',
-            'username': 'username',
-            'authProto': 'authProtocol',
-            'privacyProto': 'privProtocol'
-        },
-        'capabilityProfile': ['name', 'description', 'usageTags'],
-        'ntpServer': ['addresses'],
-        'pool': {
-            'name': 'name',
-            'description': 'description',
-            'storageResourceType': 'storageResourceType',
-            'alertThreshold': 'alertThreshold',
-            'poolSpaceHarvestHighThreshold': 'poolSpaceHarvestHighThreshold',
-            'poolSpaceHarvestLowThreshold': 'poolSpaceHarvestLowThreshold',
-            'snapSpaceHarvestHighThreshold': 'snapSpaceHarvestHighThreshold',
-            'snapSpaceHarvestLowThreshold': 'snapSpaceHarvestLowThreshold',
-            'isHarvestEnabled': 'isHarvestEnabled',
-            'isSnapHarvestEnabled': 'isSnapHarvestEnabled',
-            'isFASTCacheEnabled': 'isFASTCacheEnabled',
-            'isFASTVpScheduleEnabled': 'isFASTVpScheduleEnabled',
-            'poolFastVP.isScheduleEnabled': 'isFASTVpScheduleEnabled'
-        },
-        'system': {
-            'name': 'name',
-            'isUpgradeComplete': 'isUpgradeCompleted',
-            'isAutoFailbackEnabled': 'isAutoFailbackEnabled',
-            'isEULAAccepted': 'isEulaAccepted'
-        },
-        'cifsServer': ['name', 'description', 'netbiosName', 'domain', 'workgroup', 'nasServer'],
-        'user': {'role.id': 'role'},
-    },
-}
-
-actionFilters = {
-    'create': {
-    }
-}
 
 
 class Unity:
@@ -574,25 +517,10 @@ class Unity:
         self.queryResults = []
         self.err = None
 
-        self.module = module
-        self.checkMode = module.check_mode
-
         self._start_session()
 
     def __del__(self):
-        self._start_session()
-
-    def _start_session(self):
-        url = '/api/instances/system/0'
-        auth = requests.auth.HTTPBasicAuth(self.username, self.password)
-        resp = self._do_get(url, auth=auth)
-        # Add 'EMC-CSRF-TOKEN' header
-        self.headers['EMC-CSRF-TOKEN'] = resp.headers['EMC-CSRF-TOKEN']
-
-    def _stop_session(self):
-        url = '/api/types/loginSessionInfo/action/logout'
-        args = {'localCleanupOnly': 'true'}
-        self._do_post(url, args, changed=False)
+        self._stop_session()
 
     def reset(self):
         self.changed = False
@@ -600,86 +528,24 @@ class Unity:
         self.queryResults = []
         self.err = None
 
-    def exit_fail(self):
-        self.module.fail_json(changed=self.changed, msg=self.err, unity_update_results=self.updateResults,
-                              unity_query_results=self.queryResults)
+    def _create(self):
 
-    def exit_success(self):
-        self.module.exit_json(changed=self.changed, unity_update_results=self.updateResults,
-                              unity_query_results=self.queryResults)
+    def _modify(self):
 
-    def _get_msg(self, resp):
-        try:
-            msg = json.loads(resp.text)
-        except ValueError:
-            msg = {'httpStatusCode': resp.status_code, 'messages': [{'en-US': resp.text}]}
-        return msg
+    def _delete(self):
 
-    def _get_result(self, resp, **kwargs):
-        if resp.status_code // 100 == 2:  # HTTP status code 2xx = success
-            return resp
+    def _do_specific_action(self):
 
-        self.err = self._get_msg(resp)
-        self.err.update({'url': resp.url})
+    def update(self, action):
+        if action == 'create':
+            return self._create()
+        if action == 'modify':
+            return self._modify()
+        if action == 'delete':
+            return self._delete()
+        return self._do_specific_action()
 
-        if resp.status_code == 401 and kwargs.get('auth'):  # Unauthorized password
-            self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs['auth'].username + "'"  # Update error message
 
-        self.exit_fail()
-
-    def _do_get(self, url, params=None, **kwargs):
-        if kwargs is None:
-            kwargs = {}
-        kwargs.update({'headers': self.headers, 'verify': False})
-        resp = self.session.get(self.apibase + url, params=params, **kwargs)
-        return self._get_result(resp, **kwargs)
-
-    def _change_result(self, resp, url, args=None, changed=True, msg=None, **kwargs):
-        if resp:
-            url = resp.url
-        elif 'params' in kwargs:  # Reconstruct URL with parameters
-            url += '?'
-            for key, value in kwargs['params'].items():
-                url += key + '=' + value + '&'
-            url = url.strip('?&')
-        if (resp is None) or (resp and resp.status_code // 100 == 2):
-            if changed:
-                self.changed = changed
-            if changed or msg:
-                changeContent = {'changed': changed}
-                if args:
-                    changeContent['args'] = args
-                if resp and resp.text:  # append response if it exists
-                    changeContent['response'] = json.loads(resp.text)
-                if msg:  # append messages if they exist
-                    changeContent.update(msg)
-                self.updateResults.append(changeContent)
-        else:
-            self.err = self._get_msg(resp)
-            self.err['url'] = resp.url
-            if args is not None:
-                self.err['args'] = args
-            self.exit_fail()
-
-    def _do_post(self, url, args, changed=True, msg=None, **kwargs):
-        if self.checkMode:
-            resp = None
-        else:
-            if kwargs is None:
-                kwargs = {}
-            kwargs.update({'headers': self.headers, 'verify': False})
-            resp = self.session.post(self.apibase + url, json=args, **kwargs)
-        self._change_result(resp, url, args, changed=changed, msg=msg, **kwargs)
-
-    def _do_delete(self, url, msg=None, **kwargs):
-        if self.checkMode:
-            resp = None
-        else:
-            if kwargs is None:
-                kwargs = {}
-            kwargs.update({'headers': self.headers, 'verify': False})
-            resp = self.session.delete(self.apibase + url, **kwargs)
-        self._change_result(resp, url, msg=msg, **kwargs)
 
     def run_update(self, update):
         paramKeys = ['language', 'timeout']
@@ -692,7 +558,6 @@ class Unity:
             msg['resource_type'] = update['resource_type']
         else:
             self.err = {'error': 'Update has no "resource_type" parameter', 'update': update}
-            self.exit_fail()
 
         if 'id' in update:  # Update an existing resource instance with ID
             msg['id'] = update['id']
@@ -735,101 +600,7 @@ class Unity:
 
         return self._do_post(url, args, params=params, msg=msg)
 
-    def get_model_of_unity(self):
-        resp = self.run_query({'resource_type': 'system', "fields": 'model'})
-        model = resp['entries'][0]['model']  # get model of Unity from JSON response
-        return model
-
-    def is_duplicate(self, update):
-        # If this is an password update, then only proceed when the password is different from the old one
-        if 'password' in update and 'oldPassword' in update:
-            return update['password'] == update['oldPassword']
-
-        # If this is an update of Proxy password, then do no checks because it is not possible to verify the HTTP Proxy's password
-        if 'proxyPassword' in update:
-            return False
-
-        query = {key: update[key] for key in update if key in ['resource_type', 'id', 'language']}
-        attrs = None
-        filter = None
-
-        if update['action'] in ['create', 'modify']:  # Only create or modify actions
-            # need to compare attributes with existing resource instances
-            # First, use the default, hard-coded attributes
-            attrs = actionAttribs[update['action']].get(update['resource_type'])
-
-            # Next, if there is customer supplied attributes in the Ansible task, then override the default attributes
-            if 'attributes' in update:
-                attrs = update['attributes']
-
-            # Last, if attributes is still not set, then use all attributes in the update that are resource-type specific
-            if attrs is None:  # if attributes to catch duplicates are not specified, find them in the update parameters
-                attrs = {attr: attr for attr in update if
-                         attr not in ['resource_type', 'id', 'action', 'language', 'timeout', 'password',
-                                      'new_password', 'attributes', 'filter']}
-
-            if isinstance(attrs, list):
-                attributes = {attr: attr for attr in attrs}
-            elif isinstance(attrs, dict):
-                attributes = attrs
-
-        if update['action'] == 'create':  # Only create action needs a filter to find duplicates
-            # First, use the default, hard-coded filter
-            filter = actionFilters[update['action']].get(update['resource_type'])
-
-            # Next, if there is customer supplied filter in the Ansible task, then override the default filter
-            if 'filter' in update:
-                filter = update['filter']
-
-            # Last, if filter is still not set, then set it to empty string
-            if filter is None:
-                filter = ''
-
-        if update['action'] == 'modify':  # Only modify action adds the 'fields' argument to the query
-            query['fields'] = ','.join([field for field in attributes.keys() if attributes[field] in update])
-        elif update['action'] == 'create':  # Only create action adds the 'filter' argument to the query
-            for queryAttr, updateAttr in attributes.items():
-                if updateAttr in update:
-                    filter = queryAttr + self.process_filter_value(
-                        self.get_dotted_value(update, updateAttr)) + ' and ' + filter
-            filter = re.sub(' and $', '', filter)  # strip the trailing 'and' if the original filter is empty string
-            query['filter'] = filter
-
-        result = self.run_query(query)
-
-        if update['action'] == 'modify':  # For modify action, compare queried attributes and update attributes
-            content = result
-            for queryAttr, updateAttr in attributes.items():
-                if updateAttr in update and self.get_dotted_value(content, queryAttr) != self.get_dotted_value(update,
-                                                                                                               updateAttr):
-                    return False
-            else:
-                return True
-        elif 'entries' in result and len(result['entries']) > 0:  # For class-level queries,
-            #  the updated resource is a duplicate if the query returns some entries
-            return result['entries']
-        elif 'id' in result:  # For instance level queries, the updated resource is a duplicate if the query result contains the 'id' field
-            return result
-        else:
-            return None
-
-    def get_dotted_value(self, dictionary, dottedKey, separator='.'):
-        value = dictionary
-        for key in dottedKey.split(separator):
-            if value:
-                value = value.get(key)
-            else:
-                break
-        return value
-
-    def process_filter_value(self, value):
-        if isinstance(value, str):
-            value = ' eq "' + value + '"'
-        else:
-            value = ' eq ' + str(value)
-        return value
-
-    def run_password_update(self, update):
+    def run_password_update(self, update):  # TODO: Fix it
         username = update.get('username')
         password = update.get('password')
         newPassword = update.get('new_password')
@@ -869,3 +640,82 @@ class Unity:
             for entry in r['entries']:
                 result['entries'].append(entry['content'])
         return result
+
+    def _start_session(self):
+        url = '/api/instances/system/0'
+        auth = requests.auth.HTTPBasicAuth(self.username, self.password)
+        resp = self._do_get(url, auth=auth)
+        # Add 'EMC-CSRF-TOKEN' header
+        self.headers['EMC-CSRF-TOKEN'] = resp.headers['EMC-CSRF-TOKEN']
+
+    def _stop_session(self):
+        url = '/api/types/loginSessionInfo/action/logout'
+        args = {'localCleanupOnly': 'true'}
+        self._do_post(url, args, changed=False)
+
+    def _get_msg(self, resp):
+        try:
+            msg = json.loads(resp.text)
+        except ValueError:
+            msg = {'httpStatusCode': resp.status_code, 'messages': [{'en-US': resp.text}]}
+        return msg
+
+    def _get_result(self, resp, **kwargs):
+        if resp.status_code // 100 == 2:  # HTTP status code 2xx = success
+            return resp
+
+        self.err = self._get_msg(resp)
+        self.err.update({'url': resp.url})
+
+        if resp.status_code == 401 and kwargs.get('auth'):  # Unauthorized password
+            self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs['auth'].username + "'"  # Update error message
+
+        self.exit_fail()
+
+    def _change_result(self, resp, url, args=None, changed=True, msg=None, **kwargs):
+        if resp:
+            url = resp.url
+        elif 'params' in kwargs:  # Reconstruct URL with parameters
+            url += '?'
+            for key, value in kwargs['params'].items():
+                url += key + '=' + value + '&'
+            url = url.strip('?&')
+        if (resp is None) or (resp and resp.status_code // 100 == 2):
+            if changed:
+                self.changed = changed
+            if changed or msg:
+                changeContent = {'changed': changed}
+                if args:
+                    changeContent['args'] = args
+                if resp and resp.text:  # append response if it exists
+                    changeContent['response'] = json.loads(resp.text)
+                if msg:  # append messages if they exist
+                    changeContent.update(msg)
+                self.updateResults.append(changeContent)
+        else:
+            self.err = self._get_msg(resp)
+            self.err['url'] = resp.url
+            if args is not None:
+                self.err['args'] = args
+            self.exit_fail()
+
+    def _do_get(self, url, params=None, **kwargs):
+        kwargs = self._add_headers_to_kwargs(**kwargs)
+        resp = self.session.get(self.apibase + url, params=params, **kwargs)
+        return self._get_result(resp, **kwargs)
+
+    def _do_post(self, url, args, changed=True, msg=None, **kwargs):
+        kwargs = self._add_headers_to_kwargs(**kwargs)
+        resp = self.session.post(self.apibase + url, json=args, **kwargs)
+        self._change_result(resp, url, args, changed=changed, msg=msg, **kwargs)
+
+    def _do_delete(self, url, msg=None, **kwargs):  # TODO: remake it
+        kwargs = self._add_headers_to_kwargs(**kwargs)
+        resp = self.session.delete(self.apibase + url, **kwargs)
+        self._change_result(resp, url, msg=msg, **kwargs)
+
+    def _add_headers_to_kwargs(self, **kwargs):
+        if kwargs is None:
+            kwargs = {}
+        kwargs.update({'headers': self.headers, 'verify': False})
+        return kwargs
