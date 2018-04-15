@@ -551,9 +551,16 @@ class Unity:
     def _delete(self, resource_type, resource_id):
         url = '/api/instances/' + resource_type + '/' + resource_id
         msg = {}
-        self._do_delete(url, msg)
+        return self._do_delete(url, msg)
 
-    def _do_specific_action(self):
+    def _do_specific_action(self, resource_type, action, update):
+        paramKeys = ['language', 'timeout']
+        urlKeys = ['resource_type', 'id', 'action', 'attributes', 'filter'] + paramKeys
+        params = {key: update[key] for key in update if key in paramKeys}
+        args = {key: update[key] for key in update if key not in urlKeys}
+        msg = {}
+        url = '/api/types/' + resource_type + '/action/' + action
+        return self._do_post(url, args, params=params, msg=msg)
 
     def update(self, action, resource_type, update_data):
         if action == 'create':
@@ -562,63 +569,11 @@ class Unity:
             resource_id = 0
             return self._modify(resource_type, resource_id, update_data)
         if action == 'delete':
-            return self._delete(resource_type)
-        return self._do_specific_action()
+            resource_id = 0
+            return self._delete(resource_type, resource_id)
+        return self._do_specific_action(resource_type, action, update_data)
 
-    def get_info(self):
 
-    def run_update(self, update):
-        paramKeys = ['language', 'timeout']
-        urlKeys = ['resource_type', 'id', 'action', 'attributes', 'filter'] + paramKeys
-        params = {key: update[key] for key in update if key in paramKeys}
-        args = {key: update[key] for key in update if key not in urlKeys}
-        msg = {}
-
-        if 'resource_type' in update:  # A resource must have the "resource_type" parameter
-            msg['resource_type'] = update['resource_type']
-        else:
-            self.err = {'error': 'Update has no "resource_type" parameter', 'update': update}
-
-        if 'id' in update:  # Update an existing resource instance with ID
-            msg['id'] = update['id']
-            url = '/api/instances/' + update['resource_type'] + '/' + update['id'] + '/action/' + update.get('action',
-                                                                                                             'modify')
-            if 'action' not in update:
-                update['action'] = 'modify'  # default action
-                msg['action'] = update['action']
-                if self.is_duplicate(update):
-                    msg['warn'] = 'The existing instances already has the same attributes as the update operation. ' \
-                                  'No update will happen.'
-                    self._change_result(None, url, args, changed=False, msg=msg, params=params)
-                    return
-            elif update['action'] == 'delete':
-                msg = update
-                url = '/api/instances/' + update['resource_type'] + '/' + update['id']
-                if not self.is_duplicate(update):
-                    msg['warn'] = 'The instance to be deleted does not exist. No update will happen.'
-                    self._change_result(None, url, args, changed=False, msg=msg, params=params)
-                    return
-                else:
-                    resp = self._do_delete(url, msg)
-                    return resp
-        else:
-            if 'action' in update:  # Class-level action
-                url = '/api/types/' + update['resource_type'] + '/action/' + update['action']
-            else:
-                update['action'] = 'create'  # Create a new instance
-                msg['action'] = update['action']
-                url = '/api/types/' + update['resource_type'] + '/instances'
-                if self.checkMode:  # Only check duplicate entries during check mode. The users accept the consequences if they still want to add the new instance
-                    duplicates = self.is_duplicate(update)
-                    if duplicates:
-                        msg.update({
-                            'warn': 'Instances with the same attributes already exist for the creation operation. Create the new instance at your own risk.',
-                            'duplicates': duplicates})
-                        self._change_result(None, url, args, changed=False, msg=msg, params=params)
-                        return msg
-        msg['action'] = update['action']
-
-        return self._do_post(url, args, params=params, msg=msg)
 
     def run_password_update(self, update):  # TODO: Fix it
         username = update.get('username')
@@ -690,8 +645,6 @@ class Unity:
         if resp.status_code == 401 and kwargs.get('auth'):  # Unauthorized password
             self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs['auth'].username + "'"  # Update error message
 
-        self.exit_fail()
-
     def _change_result(self, resp, url, args=None, changed=True, msg=None, **kwargs):
         if resp:
             url = resp.url
@@ -717,22 +670,24 @@ class Unity:
             self.err['url'] = resp.url
             if args is not None:
                 self.err['args'] = args
-            self.exit_fail()
 
     def _do_get(self, url, params=None, **kwargs):
         kwargs = self._add_headers_to_kwargs(**kwargs)
         resp = self.session.get(self.apibase + url, params=params, **kwargs)
-        return self._get_result(resp, **kwargs)
+        self._get_result(resp, **kwargs)
+        return resp
 
     def _do_post(self, url, args, changed=True, msg=None, **kwargs):
         kwargs = self._add_headers_to_kwargs(**kwargs)
         resp = self.session.post(self.apibase + url, json=args, **kwargs)
         self._change_result(resp, url, args, changed=changed, msg=msg, **kwargs)
+        return resp
 
     def _do_delete(self, url, msg=None, **kwargs):  # TODO: remake it
         kwargs = self._add_headers_to_kwargs(**kwargs)
         resp = self.session.delete(self.apibase + url, **kwargs)
         self._change_result(resp, url, msg=msg, **kwargs)
+        return resp
 
     def _add_headers_to_kwargs(self, **kwargs):
         if kwargs is None:
