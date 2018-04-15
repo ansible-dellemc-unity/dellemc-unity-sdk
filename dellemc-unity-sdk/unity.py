@@ -538,17 +538,20 @@ class Unity:
         msg = {}
         return self._do_post(url, args, params=params, msg=msg)
 
-    def _modify(self, resource_type, id, update):
+    def _modify(self, resource_type, resource_id, update):
         paramKeys = ['language', 'timeout']
         urlKeys = ['resource_type', 'id', 'action', 'attributes', 'filter'] + paramKeys
         params = {key: update[key] for key in update if key in paramKeys}
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
 
-        url = '/api/instances/' + resource_type + '/' + id + '/action/' + 'modify'
+        url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + 'modify'
         return self._do_post(url, args, params=params, msg=msg)
 
-    def _delete(self, resource_type):
+    def _delete(self, resource_type, resource_id):
+        url = '/api/instances/' + resource_type + '/' + resource_id
+        msg = {}
+        self._do_delete(url, msg)
 
     def _do_specific_action(self):
 
