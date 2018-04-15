@@ -528,24 +528,41 @@ class Unity:
         self.queryResults = []
         self.err = None
 
-    def _create(self):
+    def _create(self, resource_type, update):  # TODO:maybe fix it
+        paramKeys = ['language', 'timeout']
+        urlKeys = ['attributes', 'filter'] + paramKeys
+        url = '/api/types/' + resource_type + '/instances'
 
-    def _modify(self):
+        params = {key: update[key] for key in update if key in paramKeys}
+        args = {key: update[key] for key in update if key not in urlKeys}
+        msg = {}
+        return self._do_post(url, args, params=params, msg=msg)
 
-    def _delete(self):
+    def _modify(self, resource_type, id, update):
+        paramKeys = ['language', 'timeout']
+        urlKeys = ['resource_type', 'id', 'action', 'attributes', 'filter'] + paramKeys
+        params = {key: update[key] for key in update if key in paramKeys}
+        args = {key: update[key] for key in update if key not in urlKeys}
+        msg = {}
+
+        url = '/api/instances/' + resource_type + '/' + id + '/action/' + 'modify'
+        return self._do_post(url, args, params=params, msg=msg)
+
+    def _delete(self, resource_type):
 
     def _do_specific_action(self):
 
-    def update(self, action):
+    def update(self, action, resource_type, update_data):
         if action == 'create':
-            return self._create()
+            return self._create(resource_type, update_data)
         if action == 'modify':
-            return self._modify()
+            resource_id = 0
+            return self._modify(resource_type, resource_id, update_data)
         if action == 'delete':
-            return self._delete()
+            return self._delete(resource_type)
         return self._do_specific_action()
 
-
+    def get_info(self):
 
     def run_update(self, update):
         paramKeys = ['language', 'timeout']
