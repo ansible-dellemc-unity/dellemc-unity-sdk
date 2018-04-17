@@ -27,8 +27,7 @@ def run_module(ansible_module, array_of_ansible_functions):
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults)
-            else:
-                ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
-                                         update_results=unity.updateResults)
-            unity.reset()
+
+    ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
+                             update_results=unity.updateResults)
     del unity
