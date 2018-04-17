@@ -566,10 +566,10 @@ class Unity:
         if action == 'create':
             return self._create(resource_type, update_data)
         if action == 'modify':
-            resource_id = 0
+            resource_id = update_data['id']
             return self._modify(resource_type, resource_id, update_data)
         if action == 'delete':
-            resource_id = 0
+            resource_id = update_data['id']
             return self._delete(resource_type, resource_id)
         return self._do_specific_action(resource_type, action, update_data)
 
