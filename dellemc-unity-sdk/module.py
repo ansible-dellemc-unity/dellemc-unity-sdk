@@ -17,12 +17,13 @@ def run(array_of_ansible_functions):
 
 def run_module(ansible_module, array_of_ansible_functions):
     # TODO: get username, host and password
-    host = '192.168.0.0'
+    host = '192.168.70.217'
     unity = Unity(host)
     for i in range(0, len(array_of_ansible_functions)):
         element = array_of_ansible_functions[i]
         if ansible_module.params[element.get_name()]:
             element.run(ansible_module.params[element.get_name()], unity)
+            #TODO: make output
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults)

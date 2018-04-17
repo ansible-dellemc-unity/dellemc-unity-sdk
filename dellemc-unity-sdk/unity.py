@@ -502,7 +502,7 @@ __email__ = "marsofandrew@gmail.com"
 
 class Unity:
 
-    def __init__(self, host, username='admin', password='Password123#'):
+    def __init__(self, host, username='admin', password='Password123!'):
         self.hostname = host
         self.username = username
         self.password = password
