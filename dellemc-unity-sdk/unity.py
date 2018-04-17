@@ -573,48 +573,44 @@ class Unity:
             return self._delete(resource_type, resource_id)
         return self._do_specific_action(resource_type, action, update_data)
 
-
-
-    def run_password_update(self, update):  # TODO: Fix it
-        username = update.get('username')
-        password = update.get('password')
-        newPassword = update.get('new_password')
-        kwargs = {'auth': requests.auth.HTTPBasicAuth(username, password), 'headers': self.headers, 'verify': False}
-        resp = requests.get(self.apibase + '/api/instances/system/0', **kwargs)
-        self._get_result(resp, **kwargs)  # process get results
-        update = {'resource_type': 'user', 'id': 'user_' + username, 'password': newPassword, 'oldPassword': password}
-        self.run_update(update)
-
-    def run_query(self, query):
-        if not 'resource_type' in query:  # A query must have the "resource_type" parameter
-            self.err = {'error': 'Query has no "resource_type" parameter', 'query': query}
-            self.exit_fail()
+    def query(self, resource_type, query_data):
         instanceKeys = ['compact', 'fields', 'language']  # Instance query keys
         collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page', 'per_page',
-                          'with_entrycount']  # Collection query keys
-        if 'id' in query:
-            url = '/api/instances/' + query['resource_type'] + '/' + query['id']
+                          'with_entrycount']
+        if 'id' in query_data:
+            url = '/api/instances/' + resource_type + '/' + query_data['id']
             paramKeys = instanceKeys
         else:
-            url = '/api/types/' + query['resource_type'] + '/instances'
+            url = '/api/types/' + query_data['resource_type'] + '/instances'
             paramKeys = collectionKeys
-        params = {key: query[key] for key in paramKeys if
-                  key in query}  # dictioanry comprehension to create a sub-dictioanry from the query with only keys in paramKeys
+        params = {key: query_data[key] for key in paramKeys if
+                  key in query_data}
         if 'compact' not in params:
             params['compact'] = 'true'  # By default, omit metadata from each instance in the query response
-        if 'id' not in query and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
+
+        if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
             params['with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
         resp = self._do_get(url, params)
-        r = json.loads(resp.text)
-        result = {'resource_type': query['resource_type']}
-        if 'id' in query:
-            result['id'] = query['id']
+        r = json.loads(resp.text)  # ?????????????????????????? r ?????????????????
+        result = {'resource_type': resource_type}
+        if 'id' in query_data:
+            result['id'] = query_data['id']
             result.update(r['content'])
         else:
             result['entries'] = []
             for entry in r['entries']:
                 result['entries'].append(entry['content'])
         return result
+
+    # def run_password_update(self, update):  # TODO: Fix it
+    #    username = update.get('username')
+    #    password = update.get('password')
+    #    newPassword = update.get('new_password')
+    #    kwargs = {'auth': requests.auth.HTTPBasicAuth(username, password), 'headers': self.headers, 'verify': False}
+    #    resp = requests.get(self.apibase + '/api/instances/system/0', **kwargs)
+    #    self._get_result(resp, **kwargs)  # process get results
+    #    update = {'resource_type': 'user', 'id': 'user_' + username, 'password': newPassword, 'oldPassword': password}
+    #    self.run_update(update)
 
     def _start_session(self):
         url = '/api/instances/system/0'
