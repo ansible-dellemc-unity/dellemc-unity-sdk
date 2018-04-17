@@ -581,7 +581,7 @@ class Unity:
             url = '/api/instances/' + resource_type + '/' + query_data['id']
             paramKeys = instanceKeys
         else:
-            url = '/api/types/' + query_data['resource_type'] + '/instances'
+            url = '/api/types/' + resource_type + '/instances'
             paramKeys = collectionKeys
         params = {key: query_data[key] for key in paramKeys if
                   key in query_data}
