@@ -12,7 +12,7 @@ def run(array_of_ansible_functions):
     for element in array_of_ansible_functions:
         arguments.update({element.get_name(): element.get_module_params()})
     module = AnsibleModule(argument_spec=arguments, supports_check_mode=True)
-    run_module(module, array_of_ansible_functions)
+    _run_module(module, array_of_ansible_functions)
 
 
 def _run_module(ansible_module, array_of_ansible_functions):
