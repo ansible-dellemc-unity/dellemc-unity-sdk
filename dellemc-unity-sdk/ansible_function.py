@@ -19,4 +19,4 @@ class AnsibleFunction:
         return dict(required=self.required, default=self.default, type=self.type)
 
     def run(self, params, unity):
-        self.function_ptr(params, unity)
+       return self.function_ptr(params, unity)
