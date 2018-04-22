@@ -4,16 +4,15 @@ __maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
-class AnsibleFunction:
-    def __init__(self, name, function_ptr, required=False, default=None, type_of_params='dict'):
-        self.name = name
+class RunnableFunction:
+    def __init__(self, function_ptr, required=False, default=None, type_of_params='dict'):
         self.function_ptr = function_ptr
         self.required = required
         self.default = default
         self.type = type_of_params
 
     def get_name(self):
-        return self.name
+        return self.function_ptr.__name__
 
     def get_module_params(self):
         return dict(required=self.required, default=self.default, type=self.type)
