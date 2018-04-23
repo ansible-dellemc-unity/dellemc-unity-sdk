@@ -6,35 +6,49 @@ __maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
-def run(array_of_ansible_functions):
-    arguments = dict()
-    # TODO: maybe add required parameter for login
-    for element in array_of_ansible_functions:
-        arguments.update({element.get_name(): element.get_module_params()})
+
+def run(array):
+    keys = {'required', 'default', 'type'}
+    arguments = dict(login=dict(required=True, default=None, type='dict'))  # TODO: check it
+    for dictionary in array:
+        function = dictionary['function']
+        parameters = dict(required=False, default=None, type='dict')
+        for key in keys:
+            if key in dictionary:
+                parameters[key] = dictionary[key]
+
+        arguments.update({function.__name__: parameters})
     module = AnsibleModule(argument_spec=arguments, supports_check_mode=True)
-    _run_module(module, array_of_ansible_functions)
+    _run_module(module, array)
 
 
-def _run_module(ansible_module, array_of_ansible_functions):
+def _run_module(ansible_module, array):
     # TODO: get username, host and password from module
-    host = '192.168.70.217'
-    unity = Unity(host)
+    if not ansible_module.params['login']:
+        ansible_module.fail_json(changed=False, msg='You must input login parameter')
+    login_params = ansible_module.params['login']
+
+    host = login_params['host']
+    username = login_params['username']
+    password = login_params['password']
+
+    unity = Unity(host, username, password)
     special_info = dict()
-    for i in range(0, len(array_of_ansible_functions)):
-        element = array_of_ansible_functions[i]
-        if ansible_module.params[element.get_name()]:
-            ok, info = element.run(ansible_module.params[element.get_name()], unity)
+    for i in range(0, len(array)):
+        function = array[i]['function']
+        if ansible_module.params[function.__name__]:
+            ok, info = function(ansible_module.params[function.__name__], unity)
             if not ok:
                 ansible_module.fail_json(changed=unity.changed, msg=info, query_results=unity.queryResults,
                                          update_results=unity.updateResults)
             else:
                 if info:
-                    special_info.update({element.get_name(): info})
+                    special_info.update({function.__name__: info})
             # TODO: make output
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults)
 
     ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
-                             update_results=unity.updateResults, special_information = special_info)
+                             update_results=unity.updateResults, special_information=special_info)
     del unity
