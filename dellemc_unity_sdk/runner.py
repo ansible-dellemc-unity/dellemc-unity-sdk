@@ -6,18 +6,17 @@ __maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
-
 def run(array):
     keys = {'required', 'default', 'type'}
     arguments = dict(login=dict(required=True, default=None, type='dict'))  # TODO: check it
     for dictionary in array:
-        function = dictionary['function']
+        function_ptr = dictionary['function']
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
                 parameters[key] = dictionary[key]
 
-        arguments.update({function.__name__: parameters})
+        arguments.update({function_ptr.__name__: parameters})
     module = AnsibleModule(argument_spec=arguments, supports_check_mode=True)
     _run_module(module, array)
 
@@ -35,15 +34,15 @@ def _run_module(ansible_module, array):
     unity = Unity(host, username, password)
     special_info = dict()
     for i in range(0, len(array)):
-        function = array[i]['function']
-        if ansible_module.params[function.__name__]:
-            ok, info = function(ansible_module.params[function.__name__], unity)
+        function_ptr = array[i]['function']
+        if ansible_module.params[function_ptr.__name__]:
+            ok, info = function_ptr(ansible_module.params[function_ptr.__name__], unity)
             if not ok:
                 ansible_module.fail_json(changed=unity.changed, msg=info, query_results=unity.queryResults,
                                          update_results=unity.updateResults)
             else:
                 if info:
-                    special_info.update({function.__name__: info})
+                    special_info.update({function_ptr.__name__: info})
             # TODO: make output
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
