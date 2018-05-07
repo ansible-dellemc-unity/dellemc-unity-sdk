@@ -22,7 +22,6 @@ def run(array):
 
 
 def _run_module(ansible_module, array):
-    # TODO: get username, host and password from module
     if not ansible_module.params['login']:
         ansible_module.fail_json(changed=False, msg='You must input login parameter')
     login_params = ansible_module.params['login']
@@ -43,10 +42,11 @@ def _run_module(ansible_module, array):
             else:
                 if info:
                     special_info.update({function_ptr.__name__: info})
+
             # TODO: make output
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
-                                         update_results=unity.updateResults)
+                                         update_results=unity.updateResults, special_info=special_info)
 
     ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
                              update_results=unity.updateResults, special_information=special_info)
