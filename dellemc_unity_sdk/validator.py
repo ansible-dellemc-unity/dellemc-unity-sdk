@@ -20,12 +20,12 @@ def _check_optional_parameters(dictionary_of_params, required_parameters, option
 
 
 def check_parameters(dictionary_of_params, param_types):
-    list_of_required = param_types['required']
+    list_of_required = param_types.get('required')
     if not list_of_required:
         list_of_required = {}
     if not _check_required_parameters(dictionary_of_params, list_of_required):
         return False
-    list_of_optional = param_types['optional']
+    list_of_optional = param_types.get('optional')
     if not list_of_optional:
         list_of_optional = {}
     return _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)

@@ -42,7 +42,7 @@ def _run_module(ansible_module, array):
             else:
                 if info:
                     special_info.update({function_ptr.__name__: info})
-            print(info) # TODO: check it and ask about work
+            #print(info) # TODO: check it and ask about work
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults, special_info=special_info)
