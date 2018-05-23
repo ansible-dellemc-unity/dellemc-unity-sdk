@@ -1,5 +1,6 @@
+#!/usr/bin/python
 from ansible.module_utils.basic import AnsibleModule
-from .unity import Unity
+from dellemc_unity_sdk.unity import Unity
 
 __author__ = "Andrew Petrov"
 __maintainer__ = "Andrew Petrov"
@@ -14,7 +15,7 @@ def run(array):
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
-                parameters[key] = dictionary[key]
+                parameters[key] = dictionary.get(key)
 
         arguments.update({function_ptr.__name__: parameters})
     module = AnsibleModule(argument_spec=arguments, supports_check_mode=True)
@@ -42,7 +43,6 @@ def _run_module(ansible_module, array):
             else:
                 if info:
                     special_info.update({function_ptr.__name__: info})
-            #print(info) # TODO: check it and ask about work
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults, special_info=special_info)
