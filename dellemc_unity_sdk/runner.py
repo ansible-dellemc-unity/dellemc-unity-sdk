@@ -1,4 +1,7 @@
 #!/usr/bin/python
+
+import json
+
 from ansible.module_utils.basic import AnsibleModule
 from dellemc_unity_sdk.unity import Unity
 
@@ -10,6 +13,7 @@ __email__ = "marsofandrew@gmail.com"
 def run(array):
     keys = {'required', 'default', 'type'}
     arguments = dict(login=dict(required=True, default=None, type='dict'))  # TODO: check it
+        
     for dictionary in array:
         function_ptr = dictionary['function']
         parameters = dict(required=False, default=None, type='dict')
@@ -19,7 +23,16 @@ def run(array):
 
         arguments.update({function_ptr.__name__: parameters})
     module = AnsibleModule(argument_spec=arguments, supports_check_mode=True)
-    _run_module(module, array)
+    
+    # if the user is working with this module in only check mode we do not
+    # want to make any changes to the environment, just return the current
+    # state with no modifications
+    if module.check_mode:
+        print('%s' % json.dumps(module.params))
+    else:
+        _run_module(module, array)
+    
+    
 
 
 def _run_module(ansible_module, array):
