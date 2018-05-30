@@ -1,5 +1,9 @@
+#!/usr/bin/python
+
+import json
+
 from ansible.module_utils.basic import AnsibleModule
-from .unity import Unity
+from dellemc_unity_sdk.unity import Unity
 
 __author__ = "Andrew Petrov"
 __maintainer__ = "Andrew Petrov"
@@ -9,16 +13,26 @@ __email__ = "marsofandrew@gmail.com"
 def run(array):
     keys = {'required', 'default', 'type'}
     arguments = dict(login=dict(required=True, default=None, type='dict'))  # TODO: check it
+        
     for dictionary in array:
         function_ptr = dictionary['function']
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
-                parameters[key] = dictionary[key]
+                parameters[key] = dictionary.get(key)
 
         arguments.update({function_ptr.__name__: parameters})
     module = AnsibleModule(argument_spec=arguments, supports_check_mode=True)
-    _run_module(module, array)
+    
+    # if the user is working with this module in only check mode we do not
+    # want to make any changes to the environment, just return the current
+    # state with no modifications
+    if module.check_mode:
+        print('%s' % json.dumps(module.params))
+    else:
+        _run_module(module, array)
+    
+    
 
 
 def _run_module(ansible_module, array):
@@ -42,7 +56,6 @@ def _run_module(ansible_module, array):
             else:
                 if info:
                     special_info.update({function_ptr.__name__: info})
-            print(info) # TODO: check it and ask about work
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults, special_info=special_info)

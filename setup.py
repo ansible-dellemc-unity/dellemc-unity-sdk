@@ -7,5 +7,5 @@ setup(
     author='Dmitry Mityushin',
     author_email='mityushin.dmitry@gmail.com',
     url='https://github.com/SPBSTUandDELLEMC-unity-ansible/dellemc_unity_sdk',
-    install_requires=['requests']
+    install_requires=['requests', 'ansible']
 )

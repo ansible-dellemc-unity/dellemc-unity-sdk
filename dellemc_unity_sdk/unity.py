@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
                     'supported_by': 'community'}
@@ -264,7 +266,9 @@ class Unity:
         params = {key: update[key] for key in update if key in paramKeys}
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
-        return self._do_post(url, args, params=params, msg=msg)
+        resp = self._do_post(url, args, params=params, msg=msg)
+        #json.loads(resp.text)
+        return resp
 
     def _modify(self, resource_type, resource_id, update):
         paramKeys = ['language', 'timeout']
