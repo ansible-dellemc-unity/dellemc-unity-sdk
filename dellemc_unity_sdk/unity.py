@@ -7,7 +7,6 @@ ANSIBLE_METADATA = {'metadata_version': '1.0',
 import requests, json, re
 
 __author__ = "Andrew Petrov"
-__maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
@@ -48,8 +47,8 @@ class Unity:
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
         resp = self._do_post(url, args, params=params, msg=msg)
-        #json.loads(resp.text)
-        return resp
+        r = json.loads(resp.text)
+        return r
 
     def _modify(self, resource_type, resource_id, update):
         paramKeys = ['language', 'timeout']
@@ -59,12 +58,16 @@ class Unity:
         msg = {}
 
         url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + 'modify'
-        return self._do_post(url, args, params=params, msg=msg)
+        resp=self._do_post(url, args, params=params, msg=msg)
+        r = json.loads(resp.text)
+        return r
 
     def _delete(self, resource_type, resource_id):
         url = '/api/instances/' + resource_type + '/' + resource_id
         msg = {}
-        return self._do_delete(url, msg)
+        resp = self._do_delete(url, msg)
+        r = json.loads(resp.text)
+        return r
 
     def _do_specific_action(self, resource_type, action, update):
         paramKeys = ['language', 'timeout']
@@ -73,7 +76,9 @@ class Unity:
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
         url = '/api/types/' + resource_type + '/action/' + action
-        return self._do_post(url, args, params=params, msg=msg)
+        resp = self._do_post(url, args, params=params, msg=msg)
+        r = json.loads(resp.text)
+        return r
 
     def update(self, action, resource_type, update_data):
         if action == 'create':
@@ -104,7 +109,7 @@ class Unity:
         if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
             params['with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
         resp = self._do_get(url, params)
-        r = json.loads(resp.text)  # ?????????????????????????? r ?????????????????
+        r = json.loads(resp.text)
         result = {'resource_type': resource_type}
         if 'id' in query_data:
             result['id'] = query_data['id']

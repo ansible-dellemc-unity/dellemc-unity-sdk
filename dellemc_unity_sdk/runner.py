@@ -6,7 +6,6 @@ from ansible.module_utils.basic import AnsibleModule
 from dellemc_unity_sdk.unity import Unity
 
 __author__ = "Andrew Petrov"
-__maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 

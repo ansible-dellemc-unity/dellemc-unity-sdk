@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 __author__ = "Andrew Petrov"
-__maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
