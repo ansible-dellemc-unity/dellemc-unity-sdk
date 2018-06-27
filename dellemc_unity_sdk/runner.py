@@ -63,29 +63,32 @@ def run_module(ansible_module, queue_of_functions):
     :param queue_of_functions: sequence of functions execution
     :return: None
     """
+    if ansible_module.check_mode:
+        print('%s' % json.dumps(ansible_module.params))
+        return
     unity = _create_unity(ansible_module)
-    special_info = dict()
+    executing_module_info = dict()
 
     for i in range(0, len(queue_of_functions)):
         function_ptr = queue_of_functions[i]
         if ansible_module.params.get(function_ptr.__name__):
             try:
                 info = function_ptr(ansible_module.params[function_ptr.__name__], unity)
-                special_info.update({function_ptr.__name__: info})
+                executing_module_info.update({function_ptr.__name__: info})
             except Exception as err:
                 ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
                                          query_results=unity.queryResults,
                                          update_results=unity.updateResults,
-                                         output=special_info)
+                                         output=executing_module_info)
                 del unity
                 return
 
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
-                                         update_results=unity.updateResults, output=special_info)
+                                         update_results=unity.updateResults, output=executing_module_info)
 
     ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
-                             update_results=unity.updateResults, output=special_info)
+                             update_results=unity.updateResults, output=executing_module_info)
     del unity
 
 

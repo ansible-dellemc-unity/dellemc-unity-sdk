@@ -47,8 +47,7 @@ class Unity:
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
         resp = self._do_post(url, args, params=params, msg=msg)
-        r = json.loads(resp.text)
-        return r
+        return self._get_message_from_update(resp)
 
     def _modify(self, resource_type, resource_id, update):
         paramKeys = ['language', 'timeout']
@@ -59,17 +58,13 @@ class Unity:
 
         url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + 'modify'
         resp = self._do_post(url, args, params=params, msg=msg)
-        r = json.loads(resp.text)
-        return r
+        return self._get_message_from_update(resp)
 
     def _delete(self, resource_type, resource_id):
         url = '/api/instances/' + resource_type + '/' + resource_id
         msg = {}
         resp = self._do_delete(url, msg)
-        result = {}
-        if resp and resp.text:
-            result = json.loads(resp.text)
-        return result
+        return self._get_message_from_update(resp)
 
     def _do_specific_action(self, resource_type, action, update):
         paramKeys = ['language', 'timeout']
@@ -78,9 +73,9 @@ class Unity:
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
         url = '/api/types/' + resource_type + '/action/' + action
+
         resp = self._do_post(url, args, params=params, msg=msg)
-        r = json.loads(resp.text)
-        return r
+        return self._get_message_from_update(resp)
 
     def update(self, action, resource_type, update_data):
         if action == 'create':
@@ -214,3 +209,9 @@ class Unity:
             kwargs = {}
         kwargs.update({'headers': self.headers, 'verify': False})
         return kwargs
+
+    def _get_message_from_update(self, resp_from_request):
+        result = {}
+        if resp_from_request and resp_from_request.text:
+            result = json.loads(resp_from_request.text)
+        return result
