@@ -75,16 +75,17 @@ def run_module(ansible_module, queue_of_functions):
             except Exception as err:
                 ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
                                          query_results=unity.queryResults,
-                                         update_results=unity.updateResults)
+                                         update_results=unity.updateResults,
+                                         output=special_info)
                 del unity
                 return
 
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
-                                         update_results=unity.updateResults, special_info=special_info)
+                                         update_results=unity.updateResults, output=special_info)
 
     ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
-                             update_results=unity.updateResults, special_information=special_info)
+                             update_results=unity.updateResults, output=special_info)
     del unity
 
 
