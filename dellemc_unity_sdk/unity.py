@@ -58,7 +58,7 @@ class Unity:
         msg = {}
 
         url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + 'modify'
-        resp=self._do_post(url, args, params=params, msg=msg)
+        resp = self._do_post(url, args, params=params, msg=msg)
         r = json.loads(resp.text)
         return r
 
@@ -66,8 +66,10 @@ class Unity:
         url = '/api/instances/' + resource_type + '/' + resource_id
         msg = {}
         resp = self._do_delete(url, msg)
-        r = json.loads(resp.text)
-        return r
+        result = {}
+        if resp and resp.text:
+            result = json.loads(resp.text)
+        return result
 
     def _do_specific_action(self, resource_type, action, update):
         paramKeys = ['language', 'timeout']
@@ -84,16 +86,17 @@ class Unity:
         if action == 'create':
             return self._create(resource_type, update_data)
         if action == 'modify':
-            resource_id = update_data['id']
+            resource_id = update_data.get('id')
             return self._modify(resource_type, resource_id, update_data)
         if action == 'delete':
-            resource_id = update_data['id']
+            resource_id = update_data.get('id')
             return self._delete(resource_type, resource_id)
         return self._do_specific_action(resource_type, action, update_data)
 
     def query(self, resource_type, query_data):
         instanceKeys = ['compact', 'fields', 'language']  # Instance query keys
-        collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page', 'per_page',
+        collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page',
+                          'per_page',
                           'with_entrycount']
         if 'id' in query_data:
             url = '/api/instances/' + resource_type + '/' + query_data['id']
@@ -104,10 +107,12 @@ class Unity:
         params = {key: query_data[key] for key in paramKeys if
                   key in query_data}
         if 'compact' not in params:
-            params['compact'] = 'true'  # By default, omit metadata from each instance in the query response
+            params[
+                'compact'] = 'true'  # By default, omit metadata from each instance in the query response
 
         if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
-            params['with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
+            params[
+                'with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
         resp = self._do_get(url, params)
         r = json.loads(resp.text)
         result = {'resource_type': resource_type}
@@ -157,7 +162,8 @@ class Unity:
         self.err.update({'url': resp.url})
 
         if resp.status_code == 401 and kwargs.get('auth'):  # Unauthorized password
-            self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs['auth'].username + "'"  # Update error message
+            self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs[
+                'auth'].username + "'"  # Update error message
 
     def _change_result(self, resp, url, args=None, changed=True, msg=None, **kwargs):
         if resp:

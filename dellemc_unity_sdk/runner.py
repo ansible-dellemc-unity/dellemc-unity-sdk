@@ -57,19 +57,28 @@ def run(array_of_dictionaries):
 
 
 def run_module(ansible_module, queue_of_functions):
+    """
+    run AnsibleModule and execute functions if they exists
+    :param ansible_module: AnsibleModule
+    :param queue_of_functions: sequence of functions execution
+    :return: None
+    """
     unity = _create_unity(ansible_module)
     special_info = dict()
 
     for i in range(0, len(queue_of_functions)):
         function_ptr = queue_of_functions[i]
-        if ansible_module.params[function_ptr.__name__]:
-            ok, info = function_ptr(ansible_module.params[function_ptr.__name__], unity)
-            if not ok:
-                ansible_module.fail_json(changed=unity.changed, msg=info, query_results=unity.queryResults,
+        if ansible_module.params.get(function_ptr.__name__):
+            try:
+                info = function_ptr(ansible_module.params[function_ptr.__name__], unity)
+                special_info.update({function_ptr.__name__: info})
+            except Exception as err:
+                ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
+                                         query_results=unity.queryResults,
                                          update_results=unity.updateResults)
-            else:
-                if info:
-                    special_info.update({function_ptr.__name__: info})
+                del unity
+                return
+
             if unity.err:
                 ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
                                          update_results=unity.updateResults, special_info=special_info)
