@@ -4,6 +4,8 @@ import json
 import warnings
 from ansible.module_utils.basic import AnsibleModule
 from dellemc_unity_sdk.unity import Unity
+from dellemc_unity_sdk import validator
+from dellemc_unity_sdk import supportive_functions
 
 __author__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
@@ -11,6 +13,13 @@ __email__ = "marsofandrew@gmail.com"
 
 def FUNCTION():  # we use function, because in Python we can change any var
     return 'function'
+
+
+def do_update_request(unity, params, params_types):
+    if not validator.check_parameters(params, params_types):
+        supportive_functions.raise_exception_about_parameters(params_types)
+    reply = unity.update('delete', 'pool', params)
+    return reply
 
 
 def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check it
@@ -25,7 +34,7 @@ def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check 
     for dictionary in array_of_dictionaries:
         function_ptr = dictionary[FUNCTION()]
         if function_ptr is None:
-            raise ValueError("dictionary don't have key '"+FUNCTION()+"'")
+            raise ValueError("dictionary don't have key '" + FUNCTION() + "'")
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
