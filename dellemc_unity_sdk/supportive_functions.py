@@ -10,7 +10,7 @@ def raise_exception_about_parameters(supported_parameters):
                      'supported parameters = ' + supported_parameters.__str__())
 
 
-def create_request_dictionary(parameters, params_types):  # FIXIT:
+def create_request_dictionary(parameters, params_types):  # FIXIT: #TODO: maybe remove it
     request_params = dict()
     for parameters_type in params_types:
         for parameter in params_types.get(parameters_type):

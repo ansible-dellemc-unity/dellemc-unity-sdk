@@ -9,6 +9,10 @@ __author__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
+def FUNCTION():  # we use function, because in Python we can change any var
+    return 'function'
+
+
 def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check it
     """
     :param array_of_dictionaries: array of dictionaries that wrap functions and special information for AnsibleModule.
@@ -19,15 +23,15 @@ def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check 
     arguments = dict(login=dict(required=True, default=None, type='dict'))
 
     for dictionary in array_of_dictionaries:
-        function_ptr = dictionary['function']
+        function_ptr = dictionary[FUNCTION()]
         if function_ptr is None:
-            raise ValueError("dictionary don't have key 'function'")
+            raise ValueError("dictionary don't have key '"+FUNCTION()+"'")
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
                 parameters[key] = dictionary.get(key)
         for key in dictionary.keys():
-            if (key not in keys) and (key != 'function'):
+            if (key not in keys) and (key != FUNCTION()):
                 parameters.update({key: dictionary.get(key)})
 
         arguments.update({function_ptr.__name__: parameters})
@@ -52,7 +56,7 @@ def run(array_of_dictionaries):
     else:
         queue = []
         for i in range(0, len(array_of_dictionaries)):
-            queue.append(array_of_dictionaries[i]['function'])
+            queue.append(array_of_dictionaries[i][FUNCTION()])
         run_module(module, queue)
 
 
@@ -84,8 +88,10 @@ def run_module(ansible_module, queue_of_functions):
                 return
 
             if unity.err:
-                ansible_module.fail_json(changed=unity.changed, msg=unity.err, query_results=unity.queryResults,
-                                         update_results=unity.updateResults, output=executing_module_info)
+                ansible_module.fail_json(changed=unity.changed, msg=unity.err,
+                                         query_results=unity.queryResults,
+                                         update_results=unity.updateResults,
+                                         output=executing_module_info)
 
     ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
                              update_results=unity.updateResults, output=executing_module_info)
