@@ -28,3 +28,7 @@ def check_parameters(dictionary_of_params, param_types):
     if not list_of_optional:
         list_of_optional = {}
     return _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
+
+
+def check_template(template):  # TODO: FIXIT
+    return True
