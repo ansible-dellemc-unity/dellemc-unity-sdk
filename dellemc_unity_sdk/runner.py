@@ -15,10 +15,10 @@ def FUNCTION():  # we use function, because in Python we can change any var
     return 'function'
 
 
-def do_update_request(unity, params, params_types):
+def do_update_request(unity, params, params_types, rest_object, action):
     if not validator.check_parameters(params, params_types):
         supportive_functions.raise_exception_about_parameters(params_types)
-    reply = unity.update('delete', 'pool', params)
+    reply = unity.update(action, rest_object, params)
     return reply
 
 
@@ -106,6 +106,8 @@ def run_module(ansible_module, queue_of_functions):
                              update_results=unity.updateResults, output=executing_module_info)
     del unity
 
+
+# TODO: add function run_template(ansible_module, template)
 
 def _create_unity(ansible_module):
     if not ansible_module.params['login']:
