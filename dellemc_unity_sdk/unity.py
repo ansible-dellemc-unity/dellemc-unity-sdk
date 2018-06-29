@@ -117,7 +117,7 @@ class Unity:
         resp = self._do_get(url, params)
         r = json.loads(resp.text)
         result = {'resource_type': resource_type}
-        #return _get_message_from_update(resp)
+
 
         if 'id' in query_data:
             result['id'] = query_data['id']
@@ -127,7 +127,6 @@ class Unity:
             for entry in r['entries']:
                 result['entries'].append(entry['content'])
         return result
-
 
     # def run_password_update(self, update):  # TODO: Fix it
     #    username = update.get('username')
