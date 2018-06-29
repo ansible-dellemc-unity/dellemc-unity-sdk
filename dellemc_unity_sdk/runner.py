@@ -117,13 +117,13 @@ def run(ansible_module, template):
                 function_ptr = actions.get(action_name).get(constants.EXECUTED_BY_KEY)
                 info = {}
                 if function_ptr and (function_ptr != constants.EXECUTED_BY_SDK):
-                    # if customer select special function for execution the action we use this function
+                    # if customer select special function to execute the action we use this function
                     if callable(function_ptr):
                         info = function_ptr(params.get(action_name), unity)
                     else:
                         raise TypeError("You try execute action by not callable object")
                 else:
-                    # if customer don't select special function for execution action or put flag EXECUTED_BY_SDK
+                    # if customer don't select special function to execute the action or put flag EXECUTED_BY_SDK
                     # action will be executed automatically by using following standard functions: do_update_request and
                     # do_query_request
                     action = actions.get(action_name)
