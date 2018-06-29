@@ -116,16 +116,15 @@ class Unity:
                 'with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
         resp = self._do_get(url, params)
         r = json.loads(resp.text)
-        result = {'resource_type': resource_type}
+        result = {}
 
-
-        if 'id' in query_data:
+        if 'id' in query_data:  # TODO: check it
             result['id'] = query_data['id']
             result.update(r['content'])
         else:
-            result['entries'] = []
+            result = []
             for entry in r['entries']:
-                result['entries'].append(entry['content'])
+                result.append(entry['content'])
         return result
 
     # def run_password_update(self, update):  # TODO: Fix it
