@@ -12,9 +12,6 @@ __author__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
 
 
-def FUNCTION():  # we use function, because in Python we can change any var
-    return 'function'
-
 def do_update_request(unity, params, params_types, rest_object, action):
     if not validator.check_parameters(params, params_types):
         supportive_functions.raise_exception_about_parameters(params_types)
@@ -23,7 +20,7 @@ def do_update_request(unity, params, params_types, rest_object, action):
 
 
 def do_query_request(unity, params, params_types, rest_object):
-    return {'do_query_request unsupported yet'}
+    return {'do_query_request is unsupported yet'}
 
 
 def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check it
@@ -36,18 +33,21 @@ def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check 
     arguments = dict(login=dict(required=True, default=None, type='dict'))
 
     for dictionary in array_of_dictionaries:
-        function_ptr = dictionary[FUNCTION()]
+        function_ptr = dictionary[constants.FUNCTION_NAME]
         if function_ptr is None:
-            raise ValueError("dictionary don't have key '" + FUNCTION() + "'")
+            raise ValueError("dictionary don't have key '" + constants.FUNCTION_NAME + "'")
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
                 parameters[key] = dictionary.get(key)
         for key in dictionary.keys():
-            if (key not in keys) and (key != FUNCTION()):
+            if (key not in keys) and (key != constants.FUNCTION_NAME):
                 parameters.update({key: dictionary.get(key)})
 
-        arguments.update({function_ptr.__name__: parameters})
+        if callable(function_ptr):
+            arguments.update({function_ptr.__name__: parameters})
+        else:
+            arguments.update({function_ptr: parameters})
     return arguments
 
 
@@ -119,7 +119,7 @@ def run(ansible_module, template):
                 if function_ptr and (function_ptr != constants.EXECUTED_BY_SDK):
                     # if customer select special function for execution the action we use this function
                     if callable(function_ptr):
-                        info = function_ptr(unity, params.get(action_name))
+                        info = function_ptr(params.get(action_name), unity)
                     else:
                         raise TypeError("You try execute action by not callable object")
                 else:

@@ -14,7 +14,7 @@ def _get_message_from_update(resp_from_request):
     result = {}
     if resp_from_request and resp_from_request.text:
         dictionary = json.loads(resp_from_request.text)
-        result=dictionary.get('content')
+        result = dictionary.get('content')
     return result
 
 
@@ -99,8 +99,7 @@ class Unity:
     def query(self, resource_type, query_data):
         instanceKeys = ['compact', 'fields', 'language']  # Instance query keys
         collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page',
-                          'per_page',
-                          'with_entrycount']
+                          'per_page', 'with_entrycount']
         if 'id' in query_data:
             url = '/api/instances/' + resource_type + '/' + query_data['id']
             paramKeys = instanceKeys
@@ -110,8 +109,7 @@ class Unity:
         params = {key: query_data[key] for key in paramKeys if
                   key in query_data}
         if 'compact' not in params:
-            params[
-                'compact'] = 'true'  # By default, omit metadata from each instance in the query response
+            params['compact'] = 'true'  # By default, omit metadata from each instance in the query response
 
         if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
             params[
@@ -119,6 +117,8 @@ class Unity:
         resp = self._do_get(url, params)
         r = json.loads(resp.text)
         result = {'resource_type': resource_type}
+        #return _get_message_from_update(resp)
+
         if 'id' in query_data:
             result['id'] = query_data['id']
             result.update(r['content'])
@@ -127,6 +127,7 @@ class Unity:
             for entry in r['entries']:
                 result['entries'].append(entry['content'])
         return result
+
 
     # def run_password_update(self, update):  # TODO: Fix it
     #    username = update.get('username')
