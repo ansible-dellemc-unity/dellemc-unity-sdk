@@ -20,7 +20,10 @@ def do_update_request(unity, params, params_types, rest_object, action):
 
 
 def do_query_request(unity, params, params_types, rest_object):
-    return {'do_query_request is unsupported yet'}
+    if not validator.check_parameters(params,params_types):
+        supportive_functions.raise_exception_about_parameters(params_types)
+    reply = unity.query(rest_object, params)
+    return reply
 
 
 def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check it
@@ -51,50 +54,13 @@ def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check 
     return arguments
 
 
-def run_module(ansible_module, queue_of_functions):
-    """
-    run AnsibleModule and execute functions if they exists
-    :param ansible_module: AnsibleModule
-    :param queue_of_functions: sequence of functions execution
-    :return: None
-    """
-    if ansible_module.check_mode:
-        print('%s' % json.dumps(ansible_module.params))
-        return
-    unity = _create_unity(ansible_module)
-    executing_module_info = dict()
-
-    for i in range(0, len(queue_of_functions)):
-        function_ptr = queue_of_functions[i]
-        if ansible_module.params.get(function_ptr.__name__):
-            try:
-                info = function_ptr(ansible_module.params[function_ptr.__name__], unity)
-                executing_module_info.update({function_ptr.__name__: info})
-            except Exception as err:
-                ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
-                                         query_results=unity.queryResults,
-                                         update_results=unity.updateResults,
-                                         output=executing_module_info)
-                del unity
-                return
-
-            if unity.err:
-                ansible_module.fail_json(changed=unity.changed, msg=unity.err,
-                                         query_results=unity.queryResults,
-                                         update_results=unity.updateResults,
-                                         output=executing_module_info)
-
-    ansible_module.exit_json(changed=unity.changed, query_results=unity.queryResults,
-                             update_results=unity.updateResults, output=executing_module_info)
-    del unity
-
-
 def run(ansible_module, template):
     """
-
-    :param ansible_module:
-    :param template:
-    :return:
+    Run AnsibleModule and execute functions if they exists
+    :param ansible_module: AnsibleModule
+    :param template: is a dictionary that should have following keys: constants.REST_OBJECT_KEY and
+    constants.ACTIONS_KEY
+    :return: None
     """
     # if the user is working with this module in only check mode we do not
     # want to make any changes to the environment, just return the current
@@ -102,8 +68,9 @@ def run(ansible_module, template):
     if ansible_module.check_mode:
         print('%s' % json.dumps(ansible_module.params))
         return
+
     if not validator.check_template(template):
-        raise ValueError('incorrect template')  # TODO: check it
+        raise ValueError('incorrect template')
     unity = _create_unity(ansible_module)
 
     rest_object = template.get(constants.REST_OBJECT_KEY)
@@ -123,7 +90,7 @@ def run(ansible_module, template):
                     else:
                         raise TypeError("You try execute action by not callable object")
                 else:
-                    # if customer don't select special function to execute the action or put flag EXECUTED_BY_SDK
+                    # if customer doesn't select special function to execute the action or put flag EXECUTED_BY_SDK
                     # action will be executed automatically by using following standard functions: do_update_request and
                     # do_query_request
                     action = actions.get(action_name)
