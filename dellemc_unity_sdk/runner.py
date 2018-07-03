@@ -33,15 +33,15 @@ def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check 
     arguments = dict(login=dict(required=True, default=None, type='dict'))
 
     for dictionary in array_of_dictionaries:
-        function_ptr = dictionary[constants.FUNCTION_NAME]
+        function_ptr = dictionary[constants.ACTION_NAME]
         if function_ptr is None:
-            raise ValueError("dictionary don't have key '" + constants.FUNCTION_NAME + "'")
+            raise ValueError("dictionary don't have key '" + constants.ACTION_NAME + "'")
         parameters = dict(required=False, default=None, type='dict')
         for key in keys:
             if key in dictionary:
                 parameters[key] = dictionary.get(key)
         for key in dictionary.keys():
-            if (key not in keys) and (key != constants.FUNCTION_NAME):
+            if (key not in keys) and (key != constants.ACTION_NAME):
                 parameters.update({key: dictionary.get(key)})
 
         if callable(function_ptr):
@@ -127,7 +127,7 @@ def run(ansible_module, template):
                     # action will be executed automatically by using following standard functions: do_update_request and
                     # do_query_request
                     action = actions.get(action_name)
-                    parameters_types = action.get(constants.PARAMETERS_TYPES_KEY)
+                    parameters_types = action.get(constants.PARAMETER_TYPES_KEY)
                     action_type = action.get(constants.ACTION_TYPE_KEY)
 
                     if action_type == constants.ActionType.UPDATE:
