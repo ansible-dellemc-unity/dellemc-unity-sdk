@@ -20,8 +20,8 @@ def do_update_request(unity, params, params_types, rest_object, action):
 
 
 def do_query_request(unity, params, params_types, rest_object):
-    if not validator.check_parameters(params,params_types):
-        supportive_functions.raise_exception_about_parameters(params_types)
+    #if not validator.check_parameters(params,params_types):
+    #    supportive_functions.raise_exception_about_parameters(params_types)
     reply = unity.query(rest_object, params)
     return reply
 
@@ -33,7 +33,8 @@ def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check 
     :return:
     """
     keys = {'required', 'default', 'type'}
-    arguments = dict(login=dict(required=True, default=None, type='dict'))
+    arguments = dict(login=dict(required=True, default=None, type='dict'), get=dict(required=False, default=None,
+                                                                                    type = 'dict'))
 
     for dictionary in array_of_dictionaries:
         function_ptr = dictionary[constants.ACTION_NAME]
@@ -107,6 +108,9 @@ def run(ansible_module, template):
                             "you select unsupported '" + constants.ACTION_TYPE_KEY + "' use them only from "
                                                                                      "constants.ActionType")
                 executing_module_info.update({action_name: info})
+            if params.get('get'):
+                info = do_query_request(unity,params.get('get'),{}, rest_object)
+                executing_module_info.update({'get': info})
 
     except Exception as err:
         ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
