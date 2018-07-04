@@ -26,33 +26,14 @@ def do_query_request(unity, params, params_types, rest_object):
     return reply
 
 
-def create_arguments_for_ansible_module(array_of_dictionaries):  # TODO:  check it
+def create_arguments_for_ansible_module(array_of_dictionaries):
     """
+    Use the same function from supportive_functions
     :param array_of_dictionaries: array of dictionaries that wrap functions and special information for AnsibleModule.
     Example: {'function':do_smth, 'key':value,...}
     :return:
     """
-    keys = {'required', 'default', 'type'}
-    arguments = dict(login=dict(required=True, default=None, type='dict'), get=dict(required=False, default=None,
-                                                                                    type='dict'))
-
-    for dictionary in array_of_dictionaries:
-        function_ptr = dictionary[constants.ACTION_NAME]
-        if function_ptr is None:
-            raise ValueError("dictionary don't have key '" + constants.ACTION_NAME + "'")
-        parameters = dict(required=False, default=None, type='dict')
-        for key in keys:
-            if key in dictionary:
-                parameters[key] = dictionary.get(key)
-        for key in dictionary.keys():
-            if (key not in keys) and (key != constants.ACTION_NAME):
-                parameters.update({key: dictionary.get(key)})
-
-        if callable(function_ptr):
-            arguments.update({function_ptr.__name__: parameters})
-        else:
-            arguments.update({function_ptr: parameters})
-    return arguments
+    return supportive_functions.create_arguments_for_ansible_module(array_of_dictionaries)
 
 
 def run(ansible_module, template):
