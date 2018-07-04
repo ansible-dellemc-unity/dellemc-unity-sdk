@@ -2,6 +2,13 @@
 
 __author__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
+from dellemc_unity_sdk import constants
+
+
+def _check_type(param, param_type):
+    if param_type is None:
+        return True
+    return param.__class__.__name__ == param_type
 
 
 def _check_required_parameters(dictionary_of_params, required_params):
@@ -30,5 +37,9 @@ def check_parameters(dictionary_of_params, param_types):
     return _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
 
 
-def check_template(template):  # TODO: FIXIT
+def check_template(template):
+    if not _check_type(template[constants.REST_OBJECT_KEY], 'str'):
+        return False
+    if not _check_type(template[constants.ACTIONS_KEY], 'dict'):
+        return False
     return True

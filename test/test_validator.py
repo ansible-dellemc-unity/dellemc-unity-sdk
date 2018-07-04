@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import unittest
 from dellemc_unity_sdk import validator
+from dellemc_unity_sdk import constants
 
 
 class TestValidator(unittest.TestCase):
@@ -14,6 +15,10 @@ class TestValidator(unittest.TestCase):
         params = {'id': '1', 'test2': '2'}
         params_type = {'required':{'id','test2'}}
         self.assertTrue(validator.check_parameters(params, params_type))
+
+    def test_check_template(self):
+        template = {constants.REST_OBJECT_KEY: '1'}
+        self.assertTrue(validator.check_template({}))
 
 
 if __name__ == '__main__':
