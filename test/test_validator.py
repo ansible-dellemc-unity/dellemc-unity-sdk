@@ -10,6 +10,11 @@ class TestValidator(unittest.TestCase):
         params_type = {'required':{'test1','test2'}, 'optional': {'test3', 'test5'}}
         self.assertTrue(validator.check_parameters(params, params_type))
 
+    def test_check_parameters_only_required(self):
+        params = {'id': '1', 'test2': '2'}
+        params_type = {'required':{'id','test2'}}
+        self.assertTrue(validator.check_parameters(params, params_type))
+
 
 if __name__ == '__main__':
     unittest.main()
