@@ -8,6 +8,7 @@ PARAMETER_TYPES_KEY = 'parameter_types'
 REST_OBJECT_KEY = 'rest_object'
 ACTIONS_KEY = 'actions'
 ACTION_NAME='function'
+DO_ACTION = 'do action'
 
 
 class ActionType(Enum):

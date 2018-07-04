@@ -97,10 +97,11 @@ def run(ansible_module, template):
                     action = actions.get(action_name)
                     parameters_types = action.get(constants.PARAMETER_TYPES_KEY)
                     action_type = action.get(constants.ACTION_TYPE_KEY)
-
+                    do_action = action.get(constants.DO_ACTION)
+                    if not do_action: do_action = action_name
                     if action_type == constants.ActionType.UPDATE:
                         info = do_update_request(unity, params.get(action_name), parameters_types, rest_object,
-                                                 action_name)
+                                                 do_action)
                     elif action_type == constants.ActionType.QUERY:
                         info = do_query_request(unity, params.get(action_name), parameters_types, rest_object)
                     else:
