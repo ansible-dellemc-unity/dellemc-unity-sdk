@@ -57,20 +57,21 @@ class Unity:
         resp = self._do_post(url, args, params=params, msg=msg)
         return _get_message_from_update(resp)
 
-    def _modify(self, resource_type, resource_id, update):
+    def _do_action_with_existing_resource(self, resource_type, resource_id, action, update):
+        if action == 'delete':
+            return self._delete(resource_type, resource_id)
         paramKeys = ['language', 'timeout']
         urlKeys = ['resource_type', 'id', 'action', 'attributes', 'filter'] + paramKeys
         params = {key: update[key] for key in update if key in paramKeys}
         args = {key: update[key] for key in update if key not in urlKeys}
-        msg = {}
-
-        url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + 'modify'
+        msg = {'action': action}
+        url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + action
         resp = self._do_post(url, args, params=params, msg=msg)
         return _get_message_from_update(resp)
 
     def _delete(self, resource_type, resource_id):
         url = '/api/instances/' + resource_type + '/' + resource_id
-        msg = {}
+        msg = {'action': 'delete'}
         resp = self._do_delete(url, msg)
         return _get_message_from_update(resp)
 
@@ -88,12 +89,11 @@ class Unity:
     def update(self, action, resource_type, update_data):
         if action == 'create':
             return self._create(resource_type, update_data)
-        if action == 'modify':
+
+        if 'id' in update_data:
             resource_id = update_data.get('id')
-            return self._modify(resource_type, resource_id, update_data)
-        if action == 'delete':
-            resource_id = update_data.get('id')
-            return self._delete(resource_type, resource_id)
+            return self._do_action_with_existing_resource(resource_type, resource_id, action, update_data)
+
         return self._do_specific_action(resource_type, action, update_data)
 
     def query(self, resource_type, query_data):
