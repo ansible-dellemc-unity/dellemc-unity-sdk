@@ -1,4 +1,8 @@
 #!/usr/bin/python
+
+from dellemc_unity_sdk import constants
+
+
 def raise_exception_about_parameters(supported_parameters):
     """
     custom function, use it to handle parameter exception
@@ -22,7 +26,7 @@ def create_arguments_for_ansible_module(array_of_dictionaries):
                                                                                     type='dict'))
 
     for dictionary in array_of_dictionaries:
-        function_ptr = dictionary[constants.ACTION_NAME]
+        function_ptr = dictionary.get(constants.ACTION_NAME)
         if function_ptr is None:
             raise ValueError("dictionary don't have key '" + constants.ACTION_NAME + "'")
         parameters = dict(required=False, default=None, type='dict')
