@@ -52,7 +52,7 @@ def _set_default(param_types):
 
 
 def check_parameters(dictionary_of_params, param_types):
-    if param_types.get('required') is not None:
+    if (param_types.get('required') is not None) or (param_types.get('optional') is not None):
         list_of_required = param_types.get('required')
         if not list_of_required:
             list_of_required = {}
