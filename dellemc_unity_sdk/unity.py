@@ -2,232 +2,20 @@
 
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
-                    'supported_by': 'community'}
-
-RETURN = '''
-unity_query_results:
-    description:
-        - A list of JSON objects detailing the results of each successful query operation.
-    returned: always
-    type: list
-    sample: >
-        "unity_query_results": [
-            {
-                "entries": [
-                    {
-                        "content": {
-                            "id": "user_test1", 
-                            "role": {
-                                "id": "operator"
-                            }
-                        }
-                    }
-                ], 
-                "entryCount": 1, 
-                "query": {
-                    "fields": "role.id", 
-                    "id": "user_test1", 
-                    "resource_type": "user"
-                }, 
-                "url": "https://192.168.0.202/api/instances/user/user_test1?compact=true&fields=role.id"
-            }, 
-            {
-                "entries": [
-                    {
-                        "content": {
-                            "address": "192.168.0.11:515", 
-                            "enabled": true, 
-                            "facility": 0, 
-                            "id": "0", 
-                            "protocol": 1
-                        }
-                    }
-                ], 
-                "entryCount": 1, 
-                "query": {
-                    "fields": "address,protocol,facility,enabled", 
-                    "id": "0", 
-                    "resource_type": "remoteSyslog"
-                }, 
-                "url": "https://192.168.0.202/api/instances/remoteSyslog/0?compact=true&fields=address%2Cprotocol%2Cfacility%2Cenabled"
-            }, 
-            {
-                "entries": [
-                    {
-                        "content": {
-                            "addresses": [
-                                "10.254.66.23", 
-                                "10.254.66.24"
-                            ], 
-                            "id": "0", 
-                            "origin": 2
-                        }
-                    }
-                ], 
-                "entryCount": 1, 
-                "query": {
-                    "fields": "domain, addresses, origin", 
-                    "page": 1, 
-                    "per_page": 100, 
-                    "resource_type": "dnsServer"
-                }, 
-                "url": "https://192.168.0.202/api/types/dnsServer/instances?compact=true&fields=domain%2C+addresses%2C+origin&with_entrycount=true&page=1&per_page=100"
-            }, 
-            {
-                "entries": [
-                    {
-                        "content": {
-                            "addresses": [
-                                "10.254.140.21", 
-                                "10.254.140.22"
-                            ], 
-                            "id": "0"
-                        }
-                    }
-                ], 
-                "entryCount": 1, 
-                "query": {
-                    "fields": "addresses", 
-                    "id": "0", 
-                    "resource_type": "ntpServer"
-                }, 
-                "url": "https://192.168.0.202/api/instances/ntpServer/0?compact=true&fields=addresses"
-            }
-        ]
-    contains:
-        entries:
-            description:
-                - A list of JSON objects for each instance of the resource type returned by the query.
-            returned: always
-            type: complex
-            contains:
-                content:
-                    description:
-                        - Content of the instance.
-                        - Contains at least the ID of the instance, and possibly other fields specified by the 'fields' parameter in the 'unity_queries' option.
-                    returned: always
-                    type: complex
-        entryCount:
-            description:
-                - Count of entries returned.
-            type: int
-        query:
-            description:
-                - The original query.
-            returned: always
-            type: complex
-        url:
-            description:
-                - URL of the query.
-            returned: always
-            type: string
-
-unity_update_results:
-    description:
-        - A list of JSON objects detailing the results of each operation.
-    returned: always
-    type: list
-    sample: >
-        "unity_update_results": [
-            {
-                "args": {
-                    "name": "test1", 
-                    "password": "Welcome1!", 
-                    "role": "administrator"
-                }, 
-                "HTTP_method": "POST",
-                "response": {
-                    "@base": "https://192.168.0.202/api/instances/user", 
-                    "content": {
-                        "id": "user_test1"
-                    }, 
-                    "links": [
-                        {
-                            "href": "/user_test1", 
-                            "rel": "self"
-                        }
-                    ], 
-                    "updated": "2017-04-04T13:32:05.837Z"
-                },
-                "url": "https://192.168.0.202/api/types/user/instances"
-            }, 
-            {
-                "args": {
-                    "address": "192.168.0.11:515", 
-                    "enabled": true, 
-                    "facility": 0, 
-                    "protocol": 1
-                }, 
-                "HTTP_method": "POST",
-                "url": "https://192.168.0.202/api/instances/remoteSyslog/0/action/modify"
-            }, 
-            {
-                "update": {
-                    "addresses": [
-                        "10.254.66.23", 
-                        "10.254.66.24"
-                    ], 
-                    "id": "0", 
-                    "resource_type": "dnsServer"
-                }, 
-                "warning": "The existing instances already has the same attributes as the update operation. No update will happen."
-            }, 
-            {
-                "args": {
-                    "addresses": [
-                        "10.254.140.21", 
-                        "10.254.140.22"
-                    ], 
-                    "rebootPrivilege": 2
-                }, 
-                "HTTP_method": "POST",
-                "url": "https://192.168.0.202/api/instances/ntpServer/0/action/modify"
-            },
-            {
-                "HTTP_method": "DELETE", 
-                "url": "https://192.168.0.202/api/instances/user/user_test1"
-            }
-        ]
-    contains:
-        HTTP_method:
-            description:
-                - HTTP method used to effect the update.
-            returned: success
-            type: string
-        url:
-            description:
-                - URL of the operation to change the resource.
-            returned: success
-            type: string
-        args:
-            description:
-                - Arguments of the operation to change the resource.
-            returned: success
-            type: complex
-        response:
-            description:
-                - Non-empty response of the update operation from the Unity system.
-            returned: success
-            type: complex
-        update:
-            description:
-                - The original update request.
-                - Only returned when the update failed.
-            returned: failure
-            type: complex
-        message:
-            description:
-                - Warning or failure message of the failed update operation.
-            returned: failure
-            type: string
-
-'''
+                    'supported_by': 'students'}
 
 import requests, json, re
 
 __author__ = "Andrew Petrov"
-__maintainer__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
+
+
+def _get_message_from_update(resp_from_request):
+    result = {}
+    if resp_from_request and resp_from_request.text:
+        dictionary = json.loads(resp_from_request.text)
+        result = dictionary.get('content')
+    return result
 
 
 class Unity:
@@ -258,7 +46,7 @@ class Unity:
         self.queryResults = []
         self.err = None
 
-    def _create(self, resource_type, update):  # TODO:maybe fix it
+    def _create(self, resource_type, update):
         paramKeys = ['language', 'timeout']
         urlKeys = ['attributes', 'filter'] + paramKeys
         url = '/api/types/' + resource_type + '/instances'
@@ -267,23 +55,25 @@ class Unity:
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
         resp = self._do_post(url, args, params=params, msg=msg)
-        #json.loads(resp.text)
-        return resp
+        return _get_message_from_update(resp)
 
-    def _modify(self, resource_type, resource_id, update):
+    def _do_action_with_existing_resource(self, resource_type, resource_id, action, update):
+        if action == 'delete':
+            return self._delete(resource_type, resource_id)
         paramKeys = ['language', 'timeout']
         urlKeys = ['resource_type', 'id', 'action', 'attributes', 'filter'] + paramKeys
         params = {key: update[key] for key in update if key in paramKeys}
         args = {key: update[key] for key in update if key not in urlKeys}
-        msg = {}
-
-        url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + 'modify'
-        return self._do_post(url, args, params=params, msg=msg)
+        msg = {'action': action}
+        url = '/api/instances/' + resource_type + '/' + resource_id + '/action/' + action
+        resp = self._do_post(url, args, params=params, msg=msg)
+        return _get_message_from_update(resp)
 
     def _delete(self, resource_type, resource_id):
         url = '/api/instances/' + resource_type + '/' + resource_id
-        msg = {}
-        return self._do_delete(url, msg)
+        msg = {'action': 'delete'}
+        resp = self._do_delete(url, msg)
+        return _get_message_from_update(resp)
 
     def _do_specific_action(self, resource_type, action, update):
         paramKeys = ['language', 'timeout']
@@ -292,23 +82,24 @@ class Unity:
         args = {key: update[key] for key in update if key not in urlKeys}
         msg = {}
         url = '/api/types/' + resource_type + '/action/' + action
-        return self._do_post(url, args, params=params, msg=msg)
+
+        resp = self._do_post(url, args, params=params, msg=msg)
+        return _get_message_from_update(resp)
 
     def update(self, action, resource_type, update_data):
         if action == 'create':
             return self._create(resource_type, update_data)
-        if action == 'modify':
-            resource_id = update_data['id']
-            return self._modify(resource_type, resource_id, update_data)
-        if action == 'delete':
-            resource_id = update_data['id']
-            return self._delete(resource_type, resource_id)
+
+        if 'id' in update_data:
+            resource_id = update_data.get('id')
+            return self._do_action_with_existing_resource(resource_type, resource_id, action, update_data)
+
         return self._do_specific_action(resource_type, action, update_data)
 
     def query(self, resource_type, query_data):
         instanceKeys = ['compact', 'fields', 'language']  # Instance query keys
-        collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page', 'per_page',
-                          'with_entrycount']
+        collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page',
+                          'per_page', 'with_entrycount']
         if 'id' in query_data:
             url = '/api/instances/' + resource_type + '/' + query_data['id']
             paramKeys = instanceKeys
@@ -321,17 +112,19 @@ class Unity:
             params['compact'] = 'true'  # By default, omit metadata from each instance in the query response
 
         if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
-            params['with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
+            params[
+                'with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
         resp = self._do_get(url, params)
-        r = json.loads(resp.text)  # ?????????????????????????? r ?????????????????
-        result = {'resource_type': resource_type}
-        if 'id' in query_data:
+        r = json.loads(resp.text)
+        result = {}
+
+        if 'id' in query_data:  # TODO: check it
             result['id'] = query_data['id']
             result.update(r['content'])
         else:
-            result['entries'] = []
+            result = []
             for entry in r['entries']:
-                result['entries'].append(entry['content'])
+                result.append(entry['content'])
         return result
 
     # def run_password_update(self, update):  # TODO: Fix it
@@ -371,7 +164,8 @@ class Unity:
         self.err.update({'url': resp.url})
 
         if resp.status_code == 401 and kwargs.get('auth'):  # Unauthorized password
-            self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs['auth'].username + "'"  # Update error message
+            self.err['messages'][0]['en-US'] = "Authentication error for User '" + kwargs[
+                'auth'].username + "'"  # Update error message
 
     def _change_result(self, resp, url, args=None, changed=True, msg=None, **kwargs):
         if resp:
