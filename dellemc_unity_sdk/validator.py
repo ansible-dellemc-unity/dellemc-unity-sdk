@@ -7,7 +7,7 @@ from dellemc_unity_sdk import constants
 
 default = {'required': False,
            'default': None,
-           'type': 'str'}
+           'type': None}
 
 
 def _check_type(param, param_type):
@@ -32,8 +32,9 @@ def _check_dict_params(dictionary_of_params, params):
     for key in dictionary_of_params:
         if key not in params:
             return False
-        elif not _check_type(dictionary_of_params.get(key), params[key]['type']):
-            return False
+        elif params[key]['type'] is not None:
+            if not _check_type(dictionary_of_params.get(key), params[key]['type']):
+                return False
 
     for key in params:
         if key not in dictionary_of_params:
