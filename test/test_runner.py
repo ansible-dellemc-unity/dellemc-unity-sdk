@@ -38,3 +38,5 @@ class TestRunner(unittest.TestCase):
         arguments = runner.create_arguments_for_ansible_module([])
         self.assertEqual(expexted_minimal, arguments)
 
+if __name__ == '__main__':
+    unittest.main()
