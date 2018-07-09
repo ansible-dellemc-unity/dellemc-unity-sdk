@@ -1,1 +1,4 @@
-.idea/*
+.idea/
+build/
+dellemc_unity_sdk.egg-info/
+dist/
