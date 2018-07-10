@@ -91,8 +91,9 @@ def run(ansible_module, template):
                                                                                      "constants.ActionType")
                 executing_module_info.update({action_name: info})
         if params.get('get'):
-            info = do_query_request(unity, params.get('get'), {}, rest_object)
-            executing_module_info.update({'get': info})
+            if not ('get' in actions.keys()):
+                info = do_query_request(unity, params.get('get'), {}, rest_object)
+                executing_module_info.update({'get': info})
 
     except Exception as err:
         ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
