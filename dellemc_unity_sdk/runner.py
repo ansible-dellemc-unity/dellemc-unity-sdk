@@ -58,6 +58,9 @@ def run(ansible_module, template):
     rest_object = template.get(constants.REST_OBJECT_KEY)
     actions = template.get(constants.ACTIONS_KEY)
     params = ansible_module.params
+    rest_object_for_get = template.get(constants.REST_OBJECT_FOR_GET_REQUEST)
+    if not rest_object_for_get:
+        rest_object_for_get = rest_object
 
     executing_module_info = dict()
     try:
@@ -76,24 +79,13 @@ def run(ansible_module, template):
                     # action will be executed automatically by using following standard functions: do_update_request and
                     # do_query_request
                     action = actions.get(action_name)
-                    parameters_types = action.get(constants.PARAMETER_TYPES_KEY)
-                    action_type = action.get(constants.ACTION_TYPE_KEY)
-                    do_action = action.get(constants.DO_ACTION)
-                    if not do_action: do_action = action_name
-                    if action_type == constants.ActionType.UPDATE:
-                        info = do_update_request(unity, params.get(action_name), parameters_types, rest_object,
-                                                 do_action)
-                    elif action_type == constants.ActionType.QUERY:
-                        info = do_query_request(unity, params.get(action_name), parameters_types, rest_object)
-                    else:
-                        raise ValueError(
-                            "you select unsupported '" + constants.ACTION_TYPE_KEY + "' use them only from "
-                                                                                     "constants.ActionType")
+                    info = _execute_request_by_sdk(action_name, action, unity, rest_object, rest_object_for_get, params)
+
                 executing_module_info.update({action_name: info})
-        if params.get('get'):
-            if not ('get' in actions.keys()):
-                info = do_query_request(unity, params.get('get'), {}, rest_object)
-                executing_module_info.update({'get': info})
+        if params.get(constants.GET):
+            if not (constants.GET in actions.keys()):
+                info = do_query_request(unity, params.get(constants.GET), {}, rest_object_for_get)
+                executing_module_info.update({constants.GET: info})
 
     except Exception as err:
         ansible_module.fail_json(changed=unity.changed, msg=err.__str__(),
@@ -124,3 +116,30 @@ def _create_unity(ansible_module):
     username = login_params['username']
     password = login_params['password']
     return Unity(host, username, password)
+
+
+def _execute_request_by_sdk(action_name, action, unity, rest_object,rest_object_for_get, params):
+    info = {}
+    parameters_types = action.get(constants.PARAMETER_TYPES_KEY)
+    action_type = action.get(constants.ACTION_TYPE_KEY)
+
+    do_action = action.get(constants.DO_ACTION)
+    if not do_action: do_action = action_name
+
+    rest_object_for_request = action.get(constants.REST_OBJECT)
+
+    if action_type == constants.ActionType.UPDATE:
+        if not rest_object_for_request:
+            rest_object_for_request = rest_object
+        info = do_update_request(unity, params.get(action_name), parameters_types, rest_object_for_request,
+                                 do_action)
+    elif action_type == constants.ActionType.QUERY:
+        if not rest_object_for_request:
+            rest_object_for_request = rest_object_for_get
+
+        info = do_query_request(unity, params.get(action_name), parameters_types, rest_object_for_request)
+    else:
+        raise ValueError(
+            "you select unsupported '" + constants.ACTION_TYPE_KEY + "' use them only from "
+                                                                     "constants.ActionType")
+    return info
