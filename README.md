@@ -15,22 +15,22 @@ You have several ways to install this SDK
 
     git clone https://github.com/ansible-dellemc-unity/dellemc-unity-sdk.git
     cd dellemc-unity-sdk
-    python setup.py sdist
-    sudo pip install dist/<archive that ends with version>
+    python setup.py sdist bdist_wheel
+    sudo pip install dist/dellemc_unity_sdk.xxxx.tar.gz
 
 ## How to write modules?
 
-According to our experience and [issue #4](https://github.com/ansible-dellemc-unity/dellemc-unity-sdk/issues/4) , you should create an instance of AnsibleModule in your module
-own module, so to create argument_spec use:
+According to our experience and [issue #4](https://github.com/ansible-dellemc-unity/dellemc-unity-sdk/issues/4) , 
+you should create an instance of AnsibleModule in your module. So to create you should argument_spec use:
 
 ``supportive_functions.create_arguments_for_ansible_module(array_of_dictionaries)`` or 
 ``supportive_functions.create_arguments_for_ansible_module(template)``
 
-After that make an instance of AnsibleModule and put it with template into
+After that make an instance of AnsibleModule and put it next to template into
 
 ``runner.run(ansible_module, template)``
 
-Your module will be automatically execute by SDK.
+Your module will be automatically executed by SDK.
 
 ## How to write templates for runner.run(...)
 
