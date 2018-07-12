@@ -13,8 +13,9 @@ __email__ = "marsofandrew@gmail.com"
 
 
 def do_update_request(unity, params, params_types, rest_object, action):
-    if not validator.check_parameters(params, params_types):
-        supportive_functions.raise_exception_about_parameters(params_types)
+    check_result = validator.check_parameters(params, params_types)
+    if not check_result['result']:
+        supportive_functions.raise_exception_about_result(check_result, params_types)
     reply = unity.update(action, rest_object, params)
     return reply
 

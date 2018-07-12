@@ -9,6 +9,9 @@ default = {'required': False,
            'default': None,
            'type': None}
 
+reply = {'result': True,
+         'message': ''}
+
 
 def _check_type(param, param_type):
     return param.__class__.__name__ == param_type
@@ -17,15 +20,15 @@ def _check_type(param, param_type):
 def _check_required_parameters(dictionary_of_params, required_params):
     for element in required_params:
         if not dictionary_of_params.get(element):
-            return False
-    return True
+            return element
+    return None
 
 
 def _check_optional_parameters(dictionary_of_params, required_parameters, optional_parameters):
     for element in dictionary_of_params.keys():
         if not ((element in required_parameters) or (element in optional_parameters)):
-            return False
-    return True
+            return element
+    return None
 
 
 def _check_dict_params(dictionary_of_params, params):
@@ -54,15 +57,24 @@ def _set_default(param_types):
 
 def check_parameters(dictionary_of_params, param_types):
     if (param_types.get('required') is not None) or (param_types.get('optional') is not None):
+
         list_of_required = param_types.get('required')
         if not list_of_required:
             list_of_required = {}
-        if not _check_required_parameters(dictionary_of_params, list_of_required):
-            return False
+        result = _check_required_parameters(dictionary_of_params, list_of_required)
+        if result is not None:
+            reply['result'] = False
+            reply['message'] = 'Required parameter {} was not found.'.format(result)
+            return reply
+
         list_of_optional = param_types.get('optional')
         if not list_of_optional:
             list_of_optional = {}
-        return _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
+        result = _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
+        if result is not None:
+            reply['result'] = False
+            reply['message'] = '{} is unsupported parameter'.format(result)
+        return reply
     else:
         _set_default(param_types)
         return _check_dict_params(dictionary_of_params, param_types)

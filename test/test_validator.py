@@ -9,12 +9,14 @@ class TestValidator(unittest.TestCase):
     def test_check_parameters_normal(self):
         params = {'test1': '1', 'test2': '2', 'test3': '3'}
         params_type = {'required': {'test1', 'test2'}, 'optional': {'test3', 'test5'}}
-        self.assertTrue(validator.check_parameters(params, params_type))
+        result = validator.check_parameters(params, params_type)
+        self.assertTrue(result['result'])
 
     def test_check_parameters_only_required(self):
         params = {'id': '1', 'test2': '2'}
         params_type = {'required': {'id', 'test2'}}
-        self.assertTrue(validator.check_parameters(params, params_type))
+        result = validator.check_parameters(params, params_type)
+        self.assertTrue(result['result'])
 
     def test_check_template_1(self):
         template = {constants.REST_OBJECT_KEY: '1'}
@@ -56,6 +58,24 @@ class TestValidator(unittest.TestCase):
 
         }
         self.assertTrue(validator.check_parameters(params, template))
+
+    def test_params_without_required(self):
+        params = {'test2': '2', 'test3': '3'}
+        params_type = {'required': {'test1', 'test2'}, 'optional': {'test3', 'test5'}}
+        result = validator.check_parameters(params, params_type)
+        self.assertFalse(result['result'])
+
+    def test_params_not_supported_param(self):
+        params = {'test1': '1', 'test2': '2', 'test3': '3', 'vadim': 3}
+        params_type = {'required': {'test1', 'test2'}, 'optional': {'test3', 'test5'}}
+        result = validator.check_parameters(params, params_type)
+        self.assertFalse(result['result'])
+
+    def test_err_not_supported_param(self):
+        params = {'test1': '1', 'test2': '2', 'test3': '3', 'vadim': 3}
+        params_type = {'required': {'test1', 'test2'}, 'optional': {'test3', 'test5'}}
+        result = validator.check_parameters(params, params_type)
+        self.assertEqual('vadim is unsupported parameter', result['message'])
 
 
 if __name__ == '__main__':
