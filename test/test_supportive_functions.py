@@ -66,7 +66,8 @@ class TestRunner(unittest.TestCase):
             constants.ACTIONS_KEY: {
                 'create':
                     {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {}},
+                     constants.PARAMETER_TYPES_KEY: {},
+                     constants.DO_ACTION: 'nnnn'},
                 'modify':
                     {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
                      constants.PARAMETER_TYPES_KEY: {}},
