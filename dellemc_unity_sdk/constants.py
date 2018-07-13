@@ -1,19 +1,22 @@
 #!/usr/bin/python
 from enum import Enum
 
-EXECUTED_BY_KEY = "executed_by"  # TODO: remove later
 EXECUTED_BY = "executed_by"
+EXECUTED_BY_KEY = EXECUTED_BY  # TODO: remove later
 EXECUTED_BY_SDK = "executed_by_sdk"
 ACTION_TYPE_KEY = "action_type"
-PARAMETER_TYPES_KEY = "parameter_types"
-REST_OBJECT_KEY = "rest_object"  # TODO: remove later
+PARAMETER_TYPES = "parameter_types"
+PARAMETER_TYPES_KEY = PARAMETER_TYPES
 REST_OBJECT = "rest_object"
-ACTIONS_KEY = "actions"  # TODO: remove later
+REST_OBJECT_KEY = REST_OBJECT  # TODO: remove later
 ACTIONS = "actions"
+ACTIONS_KEY = ACTIONS  # TODO: remove later
 ACTION_NAME = "function"
 DO_ACTION = "do_action"
 GET = "get"
 REST_OBJECT_FOR_GET_REQUEST = "rest_object_for_get"
+VALIDATOR_RESULT = "result"
+VALIDATOR_MESSAGE = "message"
 
 
 class ActionType(Enum):

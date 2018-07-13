@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 __author__ = "Andrew Petrov"
+__collaborations__=["Vadim Sychev"]
 __email__ = "marsofandrew@gmail.com"
 
 from dellemc_unity_sdk import constants
@@ -9,8 +10,8 @@ default = {'required': False,
            'default': None,
            'type': None}
 
-reply = {'result': True,
-         'message': ''}
+reply = {constants.VALIDATOR_RESULT: True,
+         constants.VALIDATOR_MESSAGE: ''}
 
 
 def _check_type(param, param_type):
@@ -63,8 +64,8 @@ def check_parameters(dictionary_of_params, param_types):
             list_of_required = {}
         result = _check_required_parameters(dictionary_of_params, list_of_required)
         if result is not None:
-            reply['result'] = False
-            reply['message'] = 'Required parameter {} was not found.'.format(result)
+            reply[constants.VALIDATOR_RESULT] = False
+            reply[constants.VALIDATOR_MESSAGE] = 'Required parameter {} was not found.'.format(result)
             return reply
 
         list_of_optional = param_types.get('optional')
@@ -72,8 +73,8 @@ def check_parameters(dictionary_of_params, param_types):
             list_of_optional = {}
         result = _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
         if result is not None:
-            reply['result'] = False
-            reply['message'] = '{} is unsupported parameter'.format(result)
+            reply[constants.VALIDATOR_RESULT] = False
+            reply[constants.VALIDATOR_MESSAGE] = '{} is unsupported parameter'.format(result)
         return reply
     else:
         _set_default(param_types)

@@ -4,7 +4,7 @@ from dellemc_unity_sdk import constants
 
 
 def raise_exception_about_result(check_results, supported_parameters):
-    raise ValueError(check_results['message'] + ',\
+    raise ValueError(check_results[constants.VALIDATOR_MESSAGE] + ',\
      supported parameters = ' + supported_parameters.__str__())
 
 

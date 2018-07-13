@@ -10,7 +10,7 @@ class TestValidator(unittest.TestCase):
         params = {'test1': '1', 'test2': '2', 'test3': '3'}
         params_type = {'required': {'test1', 'test2'}, 'optional': {'test3', 'test5'}}
         result = validator.check_parameters(params, params_type)
-        self.assertTrue(result['result'])
+        self.assertTrue(result[constants.VALIDATOR_RESULT])
 
     def test_check_parameters_only_required(self):
         params = {'id': '1', 'test2': '2'}
