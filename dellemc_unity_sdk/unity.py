@@ -1,10 +1,9 @@
 #!/usr/bin/python
+import requests, json, re
 
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
                     'supported_by': 'students'}
-
-import requests, json, re
 
 __author__ = "Andrew Petrov"
 __email__ = "marsofandrew@gmail.com"
