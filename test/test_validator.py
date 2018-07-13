@@ -35,7 +35,7 @@ class TestValidator(unittest.TestCase):
                   'addPoolUnitParameters': 's123',
                   'description': 'asdasd'
                   }
-        self.assertTrue(validator.check_parameters(params, template))
+        self.assertTrue(validator.check_parameters(params, template)['result'])
 
     def test_check_dict_parameters_without_required(self):
         template = {'name': {'required': True, 'default': None, 'type': 'str'},
@@ -46,7 +46,21 @@ class TestValidator(unittest.TestCase):
             'addPoolUnitParameters': 's123',
             'description': 'asdasd'
         }
-        self.assertFalse(validator.check_parameters(params, template))
+        self.assertFalse(validator.check_parameters(params, template)['result'])
+
+    def test_check_dict_parameters_wrong_type(self):
+        template = {'name': {'required': True, 'default': None, 'type': 'str'},
+                    'addPoolUnitParameters': {'required': True, 'default': None, 'type': 'str'},
+                    'description': {'required': False, 'default': None, 'type': 'str'}
+                    }
+        params = {
+            'name' : 1,
+            'addPoolUnitParameters': 's123',
+            'description': 'asdasd'
+        }
+        reply = validator.check_parameters(params, template)
+        print (reply)
+        self.assertEqual('str is not int',reply['message'])
 
     def test_check_dict_parameters_without_required_but_with_default(self):
         template = {'name': {'required': True, 'default': 'pool_1', 'type': 'str'},
@@ -57,7 +71,7 @@ class TestValidator(unittest.TestCase):
             'addPoolUnitParameters': 's123',
 
         }
-        self.assertTrue(validator.check_parameters(params, template))
+        self.assertTrue(validator.check_parameters(params, template)['result'])
 
     def test_params_without_required(self):
         params = {'test2': '2', 'test3': '3'}

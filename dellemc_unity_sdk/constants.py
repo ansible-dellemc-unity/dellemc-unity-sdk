@@ -17,7 +17,9 @@ GET = "get"
 REST_OBJECT_FOR_GET_REQUEST = "rest_object_for_get"
 VALIDATOR_RESULT = "result"
 VALIDATOR_MESSAGE = "message"
-
+ERR_MISSING_REQUIRED_PARAMETER = "Required parameter {} was not found."
+ERR_UNSUPPORTED_PARAMETER = "{} is unsupported parameter"
+ERR_WRONG_TYPE = "{} is not {}"
 
 class ActionType(Enum):
     UPDATE = "update"

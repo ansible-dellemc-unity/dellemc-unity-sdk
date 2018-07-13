@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 __author__ = "Andrew Petrov"
-__collaborations__=["Vadim Sychev"]
+__collaborations__ = ["Vadim Sychev"]
 __email__ = "marsofandrew@gmail.com"
 
 from dellemc_unity_sdk import constants
@@ -14,8 +14,18 @@ reply = {constants.VALIDATOR_RESULT: True,
          constants.VALIDATOR_MESSAGE: ''}
 
 
+def _create_reply(result, message=''):
+    reply[constants.VALIDATOR_RESULT] = result
+    reply[constants.VALIDATOR_MESSAGE] = message
+    return reply
+
+
+def _get_type(param):
+    return param.__class__.__name__
+
+
 def _check_type(param, param_type):
-    return param.__class__.__name__ == param_type
+    return _get_type(param) == param_type
 
 
 def _check_required_parameters(dictionary_of_params, required_params):
@@ -35,18 +45,19 @@ def _check_optional_parameters(dictionary_of_params, required_parameters, option
 def _check_dict_params(dictionary_of_params, params):
     for key in dictionary_of_params:
         if key not in params:
-            return False
+            return _create_reply(False, constants.ERR_UNSUPPORTED_PARAMETER.format(key))
         elif params[key]['type'] is not None:
             if not _check_type(dictionary_of_params.get(key), params[key]['type']):
-                return False
+                message = constants.ERR_WRONG_TYPE.format(params[key]['type'], _get_type(dictionary_of_params.get(key)))
+                return _create_reply(False, message)
 
     for key in params:
         if key not in dictionary_of_params:
             if params[key]['default'] is not None:
                 dictionary_of_params[key] = params[key]['default']
             elif params[key]['required'] is True:
-                return False
-    return True
+                return _create_reply(False, constants.ERR_MISSING_REQUIRED_PARAMETER.format(key))
+    return _create_reply(True, '')
 
 
 def _set_default(param_types):
@@ -64,21 +75,19 @@ def check_parameters(dictionary_of_params, param_types):
             list_of_required = {}
         result = _check_required_parameters(dictionary_of_params, list_of_required)
         if result is not None:
-            reply[constants.VALIDATOR_RESULT] = False
-            reply[constants.VALIDATOR_MESSAGE] = 'Required parameter {} was not found.'.format(result)
-            return reply
+            return _create_reply(False, constants.ERR_MISSING_REQUIRED_PARAMETER.format(result))
 
         list_of_optional = param_types.get('optional')
         if not list_of_optional:
             list_of_optional = {}
         result = _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
         if result is not None:
-            reply[constants.VALIDATOR_RESULT] = False
-            reply[constants.VALIDATOR_MESSAGE] = '{} is unsupported parameter'.format(result)
-        return reply
+            return _create_reply(False, constants.ERR_UNSUPPORTED_PARAMETER.format(result))
+        return _create_reply(True,'')
     else:
         _set_default(param_types)
-        return _check_dict_params(dictionary_of_params, param_types)
+        _check_dict_params(dictionary_of_params, param_types)
+        return reply
 
 
 def check_template(template):
