@@ -60,7 +60,7 @@ class TestValidator(unittest.TestCase):
         }
         reply = validator.check_parameters(params, template)
         print (reply)
-        self.assertEqual('str is not int',reply['message'])
+        self.assertEqual('name must be str, not int',reply['message'])
 
     def test_check_dict_parameters_without_required_but_with_default(self):
         template = {'name': {'required': True, 'default': 'pool_1', 'type': 'str'},

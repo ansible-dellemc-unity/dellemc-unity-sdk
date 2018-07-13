@@ -48,7 +48,8 @@ def _check_dict_params(dictionary_of_params, params):
             return _create_reply(False, constants.ERR_UNSUPPORTED_PARAMETER.format(key))
         elif params[key]['type'] is not None:
             if not _check_type(dictionary_of_params.get(key), params[key]['type']):
-                message = constants.ERR_WRONG_TYPE.format(params[key]['type'], _get_type(dictionary_of_params.get(key)))
+                message = constants.ERR_WRONG_TYPE.format(key, params[key]['type'],
+                                                          _get_type(dictionary_of_params.get(key)))
                 return _create_reply(False, message)
 
     for key in params:
@@ -83,7 +84,7 @@ def check_parameters(dictionary_of_params, param_types):
         result = _check_optional_parameters(dictionary_of_params, list_of_required, list_of_optional)
         if result is not None:
             return _create_reply(False, constants.ERR_UNSUPPORTED_PARAMETER.format(result))
-        return _create_reply(True,'')
+        return _create_reply(True, '')
     else:
         _set_default(param_types)
         _check_dict_params(dictionary_of_params, param_types)
