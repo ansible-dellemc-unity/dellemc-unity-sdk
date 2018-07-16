@@ -4,7 +4,8 @@ from enum import Enum
 EXECUTED_BY = "executed_by"
 EXECUTED_BY_KEY = EXECUTED_BY  # TODO: remove later
 EXECUTED_BY_SDK = "executed_by_sdk"
-ACTION_TYPE_KEY = "action_type"
+ACTION_TYPE = "action_type"
+ACTION_TYPE_KEY = ACTION_TYPE
 PARAMETER_TYPES = "parameter_types"
 PARAMETER_TYPES_KEY = PARAMETER_TYPES
 REST_OBJECT = "rest_object"
