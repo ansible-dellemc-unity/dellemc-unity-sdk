@@ -60,12 +60,12 @@ For example:
 ### Optional parameters (keys) for template
 
 1. ``constants.REST_OBJECT_FOR_GET_REQUEST`` use this key for making GET request to REST
- object that is different between ``constants.REST_OBJECT``
+ object that is different from ``constants.REST_OBJECT``
 
 ### Optional parameters (keys) for dictionary of actions
 
-1. ``constants.DO_ACTION = 'do action'`` use this key if action name (key of action)
- is different between action of REST object. Set in value REST object action. For example,
+1. ``constants.DO_ACTION = 'do action'`` use this constant if you want the parameter name in the playbook to 
+be different from the one in the REST model. For example,
  
        {
            constants.REST_OBJECT: 'lun',
@@ -98,6 +98,6 @@ that will be add to output in parameter ``'output'``
 
 ## Additional information
 
-All REST objects have action _"get"_ (``constants.GET``), that sends GET requests, you allow to redefine this action 
+All REST objects have action _"get"_ (``constants.GET``), that sends GET requests, you allowed to redefine this action 
 
 

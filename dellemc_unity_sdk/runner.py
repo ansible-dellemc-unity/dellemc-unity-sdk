@@ -15,14 +15,12 @@ __email__ = "marsofandrew@gmail.com"
 def do_update_request(unity, params, params_types, rest_object, action):
     check_result = validator.check_parameters(params, params_types)
     if not check_result[constants.VALIDATOR_RESULT]:
-        supportive_functions.raise_exception_about_result(check_result, params_types)
+        supportive_functions.raise_exception_about_parameters(check_result, params_types)
     reply = unity.update(action, rest_object, params)
     return reply
 
 
 def do_query_request(unity, params, params_types, rest_object):
-    # if not validator.check_parameters(params,params_types):
-    #    supportive_functions.raise_exception_about_parameters(params_types)
     if params == {}:
         raise ValueError("input some parameters for GET request")
     reply = unity.query(rest_object, params)

@@ -3,20 +3,10 @@
 from dellemc_unity_sdk import constants
 
 
-def raise_exception_about_result(check_results, supported_parameters):
+def raise_exception_about_parameters(check_results, supported_parameters):
     raise ValueError(check_results[constants.VALIDATOR_MESSAGE] + ',\
      supported parameters = ' + supported_parameters.__str__())
 
-
-def raise_exception_about_parameters(supported_parameters):
-    """
-    custom function, use it to handle parameter exception
-    :param supported_parameters: dictionary of supported parameters types.
-     Example: {'required':{...}, 'optional':{...}}
-    :return: False, special string about exception
-    """
-    raise ValueError('You did not input required parameters or inputted unsupported parameter, ' \
-                     'supported parameters = ' + supported_parameters.__str__())
 
 
 def create_arguments_for_ansible_module(arguments):
