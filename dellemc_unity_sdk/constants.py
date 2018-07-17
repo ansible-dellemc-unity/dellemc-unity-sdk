@@ -16,6 +16,9 @@ VALIDATOR_MESSAGE = "message"
 ERR_MISSING_REQUIRED_PARAMETER = "Required parameter {} was not found."
 ERR_UNSUPPORTED_PARAMETER = "{} is unsupported parameter"
 ERR_WRONG_TYPE = "{} must be {}, not {}"
+UNITY_IP = "unityIP"
+USERNAME = "username"
+PASSWORD = "password"
 
 
 class ActionType(Enum):

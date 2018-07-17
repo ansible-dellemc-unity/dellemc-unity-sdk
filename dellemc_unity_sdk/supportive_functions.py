@@ -39,7 +39,7 @@ def _create_arguments_for_ansible_module_from_template(template):
                      get=dict(required=False, default=None, type='dict'))
 
     parameters = dict(required=False, default=None, type='dict')
-    actions = template.get(constants.ACTIONS_KEY)
+    actions = template.get(constants.ACTIONS)
     for action_name in actions.keys():
         arguments.update({action_name: parameters})
     return arguments
