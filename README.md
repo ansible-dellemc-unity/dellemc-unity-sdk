@@ -36,7 +36,7 @@ Your module will be automatically executed by SDK.
 
 template is a dictionary that should have following keys:
 
-1. ``constants.REST_OBJEC = 'rest_object'`` value of this key should be a REST object
+1. ``constants.REST_OBJECT = 'rest_object'`` value of this key should be a REST object
 2. ``constants.ACTIONS = 'actions'`` value of this key should be a dictionary of actions,
 for example, {'create:{...}', 'delete':{...},...}
 

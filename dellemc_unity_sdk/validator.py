@@ -1,8 +1,7 @@
 #!/usr/bin/python
 
-__author__ = "Andrew Petrov"
-__collaborations__ = ["Vadim Sychev"]
-__email__ = "marsofandrew@gmail.com"
+__author__ = "Vadim Sychev"
+__collaborations__ = ["Andrew Petrov"]
 
 from dellemc_unity_sdk import constants
 

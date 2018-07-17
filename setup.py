@@ -7,7 +7,7 @@ setup(
     name="dellemc_unity_sdk",
     version="0.4.1",
     packages=find_packages(),
-    author="Dmitry Mityushin",
+    author="ansible-dellemc-unity",
     author_email="mityushin.dmitry@gmail.com",
     description="Package used to create requests to DellEMC Unity.",
     long_description=long_description,
