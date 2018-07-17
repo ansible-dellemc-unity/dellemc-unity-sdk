@@ -43,8 +43,8 @@ def run(ansible_module, template):
     """
     Run AnsibleModule and execute functions if they exists
     :param ansible_module: AnsibleModule
-    :param template: is a dictionary that should have following keys: constants.REST_OBJECT_KEY and
-    constants.ACTIONS_KEY
+    :param template: is a dictionary that should have following keys: constants.REST_OBJECT and
+    constants.ACTIONS
     :return: None
     """
     # if the user is working with this module in only check mode we do not

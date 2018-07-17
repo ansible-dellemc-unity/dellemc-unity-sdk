@@ -9,14 +9,14 @@ default = {'required': False,
            'default': None,
            'type': None}
 
-reply = {constants.VALIDATOR_RESULT: True,
-         constants.VALIDATOR_MESSAGE: ''}
+_reply = {constants.VALIDATOR_RESULT: True,
+          constants.VALIDATOR_MESSAGE: ''}
 
 
 def _create_reply(result, message=''):
-    reply[constants.VALIDATOR_RESULT] = result
-    reply[constants.VALIDATOR_MESSAGE] = message
-    return reply
+    _reply[constants.VALIDATOR_RESULT] = result
+    _reply[constants.VALIDATOR_MESSAGE] = message
+    return _reply
 
 
 def _get_type(param):
@@ -31,14 +31,14 @@ def _check_required_parameters(dictionary_of_params, required_params):
     for element in required_params:
         if not dictionary_of_params.get(element):
             return element
-    return None
+
 
 
 def _check_optional_parameters(dictionary_of_params, required_parameters, optional_parameters):
     for element in dictionary_of_params.keys():
         if not ((element in required_parameters) or (element in optional_parameters)):
             return element
-    return None
+
 
 
 def _check_dict_params(dictionary_of_params, params):
@@ -87,12 +87,12 @@ def check_parameters(dictionary_of_params, param_types):
     else:
         _set_default(param_types)
         _check_dict_params(dictionary_of_params, param_types)
-        return reply
+        return _reply
 
 
 def check_template(template):
-    if not _check_type(template.get(constants.REST_OBJECT_KEY), 'str'):
+    if not _check_type(template.get(constants.REST_OBJECT), 'str'):
         return False
-    if not _check_type(template.get(constants.ACTIONS_KEY), 'dict'):
+    if not _check_type(template.get(constants.ACTIONS), 'dict'):
         return False
     return True
