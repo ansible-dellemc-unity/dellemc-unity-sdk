@@ -2,7 +2,7 @@
 import unittest
 from dellemc_unity_sdk import validator
 from dellemc_unity_sdk import constants
-from dellemc_unity_sdk import supported_enums
+from dellemc_unity_sdk import res
 
 
 class TestValidator(unittest.TestCase):

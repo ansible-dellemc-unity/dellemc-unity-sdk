@@ -94,6 +94,15 @@ def _set_enum_value(params, params_types):
 
 
 def check_parameters(dictionary_of_params, param_types):
+    """
+    Check parameters and return reply
+    :param dictionary_of_params: is a dictionary of parameters from playbook
+    :param param_types: is a dictionary of supported parameters from ansible module
+    :return: _reply is a dictionary with keys: constants.VALIDATOR_RESULT
+    and constants.VALIDATOR_MESSAGE
+    constants.VALIDATOR_RESULT is True if the parameters are correct
+    constants.VALIDATOR_MESSAGE contains '' if the parameters are correct, else contains error message
+    """
     _set_result(True)
     _set_message('')
     if (param_types.get(constants.PARAMETER_REQUIRED) is not None) or \
@@ -125,7 +134,6 @@ def check_parameters(dictionary_of_params, param_types):
             _set_result(False)
             _set_message(result)
         return _reply
-    issubclass()
 
 
 def check_template(template):

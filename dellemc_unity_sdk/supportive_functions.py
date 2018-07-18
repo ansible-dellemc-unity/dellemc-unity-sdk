@@ -5,10 +5,10 @@ from dellemc_unity_sdk import constants
 
 def raise_exception_about_parameters(check_results, supported_parameters):
     """
-    Raise exception
-    :param check_results:
-    :param supported_parameters:
-    :return:
+    Raise error with an error message from validator.check_parameters()
+    :param check_results: is a dictionary that should have following keys: constants.VALIDATOR_RESULT
+    and constants.VALIDATOR_MESSAGE
+    :param supported_parameters: is a dictionary of supported parameters from ansible module
     """
     raise ValueError(check_results[constants.VALIDATOR_MESSAGE] + ',\
      supported parameters = ' + supported_parameters.__str__())
