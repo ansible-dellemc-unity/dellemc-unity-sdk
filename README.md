@@ -34,46 +34,70 @@ Your module will be automatically executed by SDK.
 
 ## How to write templates for runner.run(...)
 
-template is a dictionary that should has following keys:
+template is a dictionary that should have following keys:
 
-1. ``constants.REST_OBJECT_KEY = 'rest_object'`` value of this key should be a REST object
-2. ``constants.ACTIONS_KEY = 'actions'`` value of this key should be a dictionary of actions,
+1. ``constants.REST_OBJECT = 'rest_object'`` value of this key should be a REST object
+2. ``constants.ACTIONS = 'actions'`` value of this key should be a dictionary of actions,
 for example, {'create:{...}', 'delete':{...},...}
 
 To execute actions automatically dictionary of action should have following parameters:
 
-1. ``constants.ACTION_TYPE_KEY`` value of this key should be ``constants.ActionType.UPDATE`` or ``constants.ActionType.QUERY``
-2. ``constants.PARAMETER_TYPES_KEY = 'parameter_types'`` value of this key should be a dictionary that should have keys:
+1. ``constants.ACTION_TYPE`` value of this key should be ``constants.ActionType.UPDATE`` or ``constants.ActionType.QUERY``
+2. ``constants.PARAMETER_TYPES = 'parameter_types'`` value of this key should be a dictionary that should have keys:
 'required' and 'optional' and value of each key should be iterable.
 
 For example:
 
     {
-        constants.REST_OBJECT_KEY: 'pool',
-        constants.ACTIONS_KEY: {
+        constants.REST_OBJECT: 'pool',
+        constants.ACTIONS: {
             'delete':
-                {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                 constants.PARAMETER_TYPES_KEY: parameters_all.get('delete')}
+                {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                 constants.PARAMETER_TYPES: parameters_all.get('delete')}
         }
     }
 
-If you want to have your custom name for action use key: 
-``constants.DO_ACTION = 'do action'`` 
-and the value of this key should
-be an action for REST object, and you can call this action by using action name (key).
+### Optional parameters (keys) for template
 
-## How to execute custom function
+1. ``constants.REST_OBJECT_FOR_GET_REQUEST`` use this key for making GET request to REST
+ object that is different from ``constants.REST_OBJECT``
+
+### Optional parameters (keys) for dictionary of actions
+
+1. ``constants.DO_ACTION = 'do action'`` use this constant if you want the parameter name in the playbook to 
+be different from the one in the REST model. For example,
+ 
+       {
+           constants.REST_OBJECT: 'lun',
+           constants.ACTIONS: {
+               'create':
+                   {
+                      constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                      constants.PARAMETER_TYPES: parameters_all.get('create'),
+                      constants.DO_ACTION: "
+                   }
+           }
+       }    
+
+
+## How to execute custom functions
 
 If your request can't be made by functions ``runner.do_update_request(...)`` or ``runner.do_query_request(...)`` you can
-execute your own function by using key ``constants.EXECUTED_BY_KEY = 'executed_by'``
+execute your own function by using key ``constants.EXECUTED_BY = 'executed_by'``
 
 For example:
 
     {
-        constants.REST_OBJECT_KEY: 'pool',
-        constants.ACTIONS_KEY: {'create': {constants.EXECUTED_BY_KEY: function}}
+        constants.REST_OBJECT: 'pool',
+        constants.ACTIONS: {'create': {constants.EXECUTED_BY: function}}
     }
 
 Your function should have 2 parameters (parameters, unity). parameters = parameters from *.yml file, 
 unity = instance of class Unity and also function must have return statement, 
 that will be add to output in parameter ``'output'``
+
+## Additional information
+
+All REST objects have action _"get"_ (``constants.GET``), that sends GET requests, you are allowed to redefine this action 
+
+

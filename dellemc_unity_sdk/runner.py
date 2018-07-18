@@ -13,15 +13,16 @@ __email__ = "marsofandrew@gmail.com"
 
 
 def do_update_request(unity, params, params_types, rest_object, action):
-    if not validator.check_parameters(params, params_types):
-        supportive_functions.raise_exception_about_parameters(params_types)
+    check_result = validator.check_parameters(params, params_types)
+    if not check_result[constants.VALIDATOR_RESULT]:
+        supportive_functions.raise_exception_about_parameters(check_result[constants.VALIDATOR_MESSAGE])
     reply = unity.update(action, rest_object, params)
     return reply
 
 
 def do_query_request(unity, params, params_types, rest_object):
-    # if not validator.check_parameters(params,params_types):
-    #    supportive_functions.raise_exception_about_parameters(params_types)
+    if params == {}:
+        raise ValueError("input some parameters for GET request")
     reply = unity.query(rest_object, params)
     return reply
 
@@ -40,8 +41,8 @@ def run(ansible_module, template):
     """
     Run AnsibleModule and execute functions if they exists
     :param ansible_module: AnsibleModule
-    :param template: is a dictionary that should have following keys: constants.REST_OBJECT_KEY and
-    constants.ACTIONS_KEY
+    :param template: is a dictionary that should have following keys: constants.REST_OBJECT and
+    constants.ACTIONS
     :return: None
     """
     # if the user is working with this module in only check mode we do not
@@ -55,8 +56,8 @@ def run(ansible_module, template):
         raise ValueError('incorrect template')
     unity = _create_unity(ansible_module)
 
-    rest_object = template.get(constants.REST_OBJECT_KEY)
-    actions = template.get(constants.ACTIONS_KEY)
+    rest_object = template.get(constants.REST_OBJECT)
+    actions = template.get(constants.ACTIONS)
     params = ansible_module.params
     rest_object_for_get = template.get(constants.REST_OBJECT_FOR_GET_REQUEST)
     if not rest_object_for_get:
@@ -66,7 +67,7 @@ def run(ansible_module, template):
     try:
         for action_name in actions.keys():
             if params.get(action_name):
-                function_ptr = actions.get(action_name).get(constants.EXECUTED_BY_KEY)
+                function_ptr = actions.get(action_name).get(constants.EXECUTED_BY)
                 info = {}
                 if function_ptr and (function_ptr != constants.EXECUTED_BY_SDK):
                     # if customer select special function to execute the action we use this function
@@ -112,16 +113,16 @@ def _create_unity(ansible_module):
 
     login_params = ansible_module.params['login']
 
-    host = login_params['host']
-    username = login_params['username']
-    password = login_params['password']
-    return Unity(host, username, password)
+    unity_ip = login_params[constants.UNITY_IP]
+    username = login_params[constants.USERNAME]
+    password = login_params[constants.PASSWORD]
+    return Unity(unity_ip, username, password)
 
 
-def _execute_request_by_sdk(action_name, action, unity, rest_object,rest_object_for_get, params):
+def _execute_request_by_sdk(action_name, action, unity, rest_object, rest_object_for_get, params):
     info = {}
-    parameters_types = action.get(constants.PARAMETER_TYPES_KEY)
-    action_type = action.get(constants.ACTION_TYPE_KEY)
+    parameters_types = action.get(constants.PARAMETER_TYPES)
+    action_type = action.get(constants.ACTION_TYPE)
 
     do_action = action.get(constants.DO_ACTION)
     if not do_action: do_action = action_name
@@ -140,6 +141,6 @@ def _execute_request_by_sdk(action_name, action, unity, rest_object,rest_object_
         info = do_query_request(unity, params.get(action_name), parameters_types, rest_object_for_request)
     else:
         raise ValueError(
-            "you select unsupported '" + constants.ACTION_TYPE_KEY + "' use them only from "
-                                                                     "constants.ActionType")
+            "you select unsupported '" + constants.ACTION_TYPE + "' use them only from "
+                                                                 "constants.ActionType")
     return info

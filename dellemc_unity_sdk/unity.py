@@ -19,8 +19,8 @@ def _get_message_from_update(resp_from_request):
 
 class Unity:
 
-    def __init__(self, host, username='admin', password='Password123!'):
-        self.hostname = host
+    def __init__(self, unity_ip, username='admin', password='Password123!'):
+        self.hostname = unity_ip
         self.username = username
         self.password = password
 

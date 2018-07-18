@@ -1,19 +1,28 @@
 #!/usr/bin/python
 from enum import Enum
 
-EXECUTED_BY_KEY = "executed_by"  # TODO: remove later
 EXECUTED_BY = "executed_by"
 EXECUTED_BY_SDK = "executed_by_sdk"
-ACTION_TYPE_KEY = "action_type"
-PARAMETER_TYPES_KEY = "parameter_types"
-REST_OBJECT_KEY = "rest_object"  # TODO: remove later
+ACTION_TYPE = "action_type"
+PARAMETER_TYPES = "parameter_types"
 REST_OBJECT = "rest_object"
-ACTIONS_KEY = "actions"  # TODO: remove later
 ACTIONS = "actions"
 ACTION_NAME = "function"
 DO_ACTION = "do_action"
 GET = "get"
 REST_OBJECT_FOR_GET_REQUEST = "rest_object_for_get"
+PARAMETER_REQUIRED = "required"
+PARAMETER_OPTIONAL = "optional"
+PARAMETER_DEFAULT = "default"
+PARAMETER_TYPE = "type"
+VALIDATOR_RESULT = "result"
+VALIDATOR_MESSAGE = "message"
+UNITY_IP = "unityIP"
+USERNAME = "username"
+PASSWORD = "password"
+ERR_MISSING_REQUIRED_PARAMETERS = "Required parameters: {} was not found."
+ERR_UNSUPPORTED_PARAMETERS = "Parameters: {} are not supported."
+ERR_WRONG_TYPE = "{} must be {}, not {}."
 
 
 class ActionType(Enum):
