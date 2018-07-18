@@ -4,6 +4,12 @@ from dellemc_unity_sdk import constants
 
 
 def raise_exception_about_parameters(check_results, supported_parameters):
+    """
+    Raise exception
+    :param check_results:
+    :param supported_parameters:
+    :return:
+    """
     raise ValueError(check_results[constants.VALIDATOR_MESSAGE] + ',\
      supported parameters = ' + supported_parameters.__str__())
 
@@ -63,3 +69,11 @@ def _create_arguments_for_ansible_module_from_array(array_of_dictionaries):
         else:
             arguments.update({function_ptr: parameters})
     return arguments
+
+
+def get_type(param):
+    return param.__class__.__name__
+
+
+def check_type(param, param_type):
+    return get_type(param) == param_type.__name__
