@@ -2,7 +2,7 @@
 import unittest
 from dellemc_unity_sdk import validator
 from dellemc_unity_sdk import constants
-from dellemc_unity_sdk import res
+from dellemc_unity_sdk import rest_supported_enums
 
 
 class TestValidator(unittest.TestCase):
@@ -122,7 +122,7 @@ class TestValidator(unittest.TestCase):
         params_type = {'name': {'required': True, 'default': 'pool_1', 'type': str},
                        'addPoolUnitParameters': {'required': True, 'default': None, 'type': str},
                        'description': {},
-                       'type': {'required': False, 'default': None, 'type': supported_enums.HostTypeEnum}
+                       'type': {'required': False, 'default': None, 'type': rest_supported_enums.HostTypeEnum}
                        }
 
         params = {
@@ -139,7 +139,7 @@ class TestValidator(unittest.TestCase):
         params_type = {'name': {'required': True, 'default': 'pool_1', 'type': str},
                        'addPoolUnitParameters': {'required': True, 'default': None, 'type': str},
                        'description': {},
-                       'type': {'required': False, 'default': None, 'type': supported_enums.HostTypeEnum}
+                       'type': {'required': False, 'default': None, 'type': rest_supported_enums.HostTypeEnum}
                        }
 
         params = {
@@ -156,7 +156,7 @@ class TestValidator(unittest.TestCase):
         params_type = {'name': {'required': True, 'default': 'pool_1', 'type': str},
                        'addPoolUnitParameters': {'required': True, 'default': None, 'type': str},
                        'description': {},
-                       'type': {'required': False, 'default': None, 'type': supported_enums.HostTypeEnum}
+                       'type': {'required': False, 'default': None, 'type': rest_supported_enums.HostTypeEnum}
                        }
 
         params = {
