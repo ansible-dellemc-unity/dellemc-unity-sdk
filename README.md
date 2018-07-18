@@ -98,6 +98,6 @@ that will be add to output in parameter ``'output'``
 
 ## Additional information
 
-All REST objects have action _"get"_ (``constants.GET``), that sends GET requests, you allowed to redefine this action 
+All REST objects have action _"get"_ (``constants.GET``), that sends GET requests, you are allowed to redefine this action 
 
 
