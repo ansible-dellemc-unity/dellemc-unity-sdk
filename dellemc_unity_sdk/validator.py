@@ -25,6 +25,12 @@ def _set_message(message):
 
 
 def _check_required_parameters(dictionary_of_params, required_params):
+    """
+
+    :param dictionary_of_params:
+    :param required_params:
+    :return:
+    """
     result = ''
     for element in required_params:
         if not dictionary_of_params.get(element):
@@ -34,6 +40,13 @@ def _check_required_parameters(dictionary_of_params, required_params):
 
 
 def _check_optional_parameters(dictionary_of_params, required_parameters, optional_parameters):
+    """
+
+    :param dictionary_of_params:
+    :param required_parameters:
+    :param optional_parameters:
+    :return:
+    """
     result = ''
     for element in dictionary_of_params.keys():
         if not ((element in required_parameters) or (element in optional_parameters)):
@@ -43,6 +56,12 @@ def _check_optional_parameters(dictionary_of_params, required_parameters, option
 
 
 def _check_dict_params(dictionary_of_params, params):
+    """
+
+    :param dictionary_of_params:
+    :param params:
+    :return:
+    """
     result = ''
     for key in params:
         if key not in dictionary_of_params:
@@ -76,6 +95,8 @@ def _set_default(param_types):
         for key in default:
             if param_types[element].get(key) is None:
                 param_types[element][key] = default[key]
+        if param_types[element].get(constants.PARAMETER_TYPE) is object:
+            param_types[element][constants.PARAMETER_TYPE] = dict
 
 
 def _set_enum_value(params, params_types):
@@ -103,6 +124,7 @@ def check_parameters(dictionary_of_params, param_types):
     constants.VALIDATOR_RESULT is True if the parameters are correct
     constants.VALIDATOR_MESSAGE contains '' if the parameters are correct, else contains error message
     """
+
     _set_result(True)
     _set_message('')
     if (param_types.get(constants.PARAMETER_REQUIRED) is not None) or \
