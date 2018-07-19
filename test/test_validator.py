@@ -169,6 +169,16 @@ class TestValidator(unittest.TestCase):
         result = validator.check_parameters(params, params_type)
         self.assertTrue(result['result'])
 
+    def test_check_dict_object_type(self):
+        template = {'name': {'required': True, 'default': 'pool_1', 'type': None},
+                    'addPoolUnitParameters': {'required': True, 'default': None, 'type': object},
+                    'description': {}
+                    }
+        params = {
+            'addPoolUnitParameters': {1:2},
 
+        }
+        res = validator.check_parameters(params, template)
+        self.assertTrue(res['result'])
 if __name__ == '__main__':
     unittest.main()
