@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dellemc_unity_sdk",
-    version="0.4.1",
+    version="0.4.2",
     packages=find_packages(),
     author="ansible-dellemc-unity",
     author_email="mityushin.dmitry@gmail.com",

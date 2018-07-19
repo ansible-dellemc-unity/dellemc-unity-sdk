@@ -15,7 +15,7 @@ You have several ways to install this SDK
 
     git clone https://github.com/ansible-dellemc-unity/dellemc-unity-sdk.git
     cd dellemc-unity-sdk
-    python setup.py sdist bdist_wheel
+    python setup.py sdist
     sudo pip install dist/dellemc_unity_sdk.xxxx.tar.gz
 
 ## How to write modules?
