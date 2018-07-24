@@ -68,9 +68,9 @@ def _create_arguments_for_ansible_module_from_array(array_of_dictionaries):
     return arguments
 
 
-def get_type(param):
+def _get_type(param):
     return param.__class__.__name__
 
 
-def check_type(param, param_type):
+def _check_type(param, param_type):
     return get_type(param) == param_type.__name__
