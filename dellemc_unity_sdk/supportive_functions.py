@@ -73,4 +73,4 @@ def _get_type(param):
 
 
 def _check_type(param, param_type):
-    return get_type(param) == param_type.__name__
+    return _get_type(param) == param_type.__name__
