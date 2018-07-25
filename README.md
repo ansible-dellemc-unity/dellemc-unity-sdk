@@ -15,10 +15,17 @@ You have several ways to install this SDK
 
     git clone https://github.com/ansible-dellemc-unity/dellemc-unity-sdk.git
     cd dellemc-unity-sdk
-    python setup.py sdist bdist_wheel
+    python setup.py sdist
     sudo pip install dist/dellemc_unity_sdk.xxxx.tar.gz
 
-## How to write modules?
+##### Install from source var2
+
+    git clone https://github.com/ansible-dellemc-unity/dellemc-unity-sdk.git
+    cd dellemc-unity-sdk
+    python setup.py sdist bdist_wheel
+    sudo pip install dist/dellemc_unity_sdk-XXXX-pyY-none-any.whl  
+
+## How to write modules
 
 According to our experience and [issue #4](https://github.com/ansible-dellemc-unity/dellemc-unity-sdk/issues/4) , 
 you should create an instance of AnsibleModule in your module. So to create you should argument_spec use:
@@ -79,6 +86,42 @@ be different from the one in the REST model. For example,
            }
        }    
 
+### How to write type of parameters for validator
+
+It should be a dictionary that can be written in two ways
+
+#### Option with type of arguments
+
+    {
+        "required_argument_var1" : dict(required=True, type=<type of this object>, default=<default_value>),
+        "required_argument_var2" : dict(required=True),
+        "optional_argument": dict(required=False),
+        "optional_argument_var_2": dict()... 
+    }
+    
+you can skip some keys in dictionary, by default it will be 
+``dict(required=False, type=None, default=None)``
+
+**supported types of arguments**:
+
+* _None_ - validator doesn't check type of this argument
+* _dict_ - validator expect type dictionary
+* _object_ - same as dict
+* _bool_
+* _int_
+* _str_
+* _list_
+* any others python's object
+* supported enums from dellemc_unity_sdk.rest_supported_enums
+
+#### Option with keys (easy way)
+
+Dictionary should have keys: "required" and "optional". For example: 
+
+    {
+        'required': {'type', 'name'},
+        'optional': {'description','osType','tenant'},
+    }
 
 ## How to execute custom functions
 
