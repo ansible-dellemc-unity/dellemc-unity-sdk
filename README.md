@@ -88,9 +88,9 @@ be different from the one in the REST model. For example,
 
 ### How to write type of parameters for validator
 
-It should be a dictionary that can be writen in two ways
+It should be a dictionary that can be written in two ways
 
-#### Variant with type of arguments
+#### Option with type of arguments
 
     {
         "required_argument_var1" : dict(required=True, type=<type of this object>, default=<default_value>),
@@ -99,7 +99,7 @@ It should be a dictionary that can be writen in two ways
         "optional_argument_var_2": dict()... 
     }
     
-you can skip some keys in dictionary of argument, by default it will be 
+you can skip some keys in dictionary, by default it will be 
 ``dict(required=False, type=None, default=None)``
 
 **supported types of arguments**:
@@ -114,7 +114,7 @@ you can skip some keys in dictionary of argument, by default it will be
 * any others python's object
 * supported enums from dellemc_unity_sdk.rest_supported_enums
 
-#### Variant with keys (easy way)
+#### Option with keys (easy way)
 
 Dictionary should have keys: "required" and "optional". For example: 
 
