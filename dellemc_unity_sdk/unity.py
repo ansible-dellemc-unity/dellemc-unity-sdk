@@ -102,7 +102,7 @@ class Unity:
         r = json.loads(resp.text)
         result = {}
 
-        if 'id' in query_data:  # TODO: check it
+        if 'id' in query_data:
             result['id'] = query_data['id']
             result.update(r['content'])
         else:
@@ -229,7 +229,7 @@ class Unity:
         self._change_result(resp, url, args, changed=changed, msg=msg, **kwargs)
         return resp
 
-    def _do_delete(self, url, msg=None, **kwargs):  # TODO: remake it
+    def _do_delete(self, url, msg=None, **kwargs):
         kwargs = self._add_headers_to_kwargs(**kwargs)
         resp = self.session.delete(self.apibase + url, **kwargs)
         self._change_result(resp, url, msg=msg, **kwargs)

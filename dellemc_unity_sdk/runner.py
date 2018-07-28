@@ -31,7 +31,7 @@ def do_update_request(unity, params, params_types, rest_object, action):
 
 def do_query_request(unity, params, params_types, rest_object):
     """
-    Snd GET requests
+    Send GET requests
     :param unity: an instance of class Unity
     :param params: params from *.yml file this params will be put into unity.query(...)
     :param params_types: now they are unused

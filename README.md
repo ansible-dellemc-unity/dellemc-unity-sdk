@@ -39,7 +39,7 @@ After that make an instance of AnsibleModule and put it next to template into
 
 Your module will be automatically executed by SDK.
 
-## How to write templates for runner.run(...)
+### How to write templates for runner.run(...)
 
 template is a dictionary that should have following keys:
 
