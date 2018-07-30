@@ -40,17 +40,17 @@ class TestRunner(unittest.TestCase):
 
     def test_create_create_arguments_for_ansible_module_template(self):
         template = {
-            constants.REST_OBJECT_KEY: 'fileInterface',
-            constants.ACTIONS_KEY: {
+            constants.REST_OBJECT: 'fileInterface',
+            constants.ACTIONS: {
                 'create':
-                    {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {}},
+                    {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                     constants.PARAMETER_TYPES: {}},
                 'modify':
-                    {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {}},
+                    {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                     constants.PARAMETER_TYPES: {}},
                 'delete':
-                    {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {}}
+                    {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                     constants.PARAMETER_TYPES: {}}
             }
         }
         arguments = supportive_functions.create_arguments_for_ansible_module(template)
@@ -62,21 +62,21 @@ class TestRunner(unittest.TestCase):
 
     def test_create_arguments_for_ansible_module_define_get(self):
         template = {
-            constants.REST_OBJECT_KEY: 'fileInterface',
-            constants.ACTIONS_KEY: {
+            constants.REST_OBJECT: 'fileInterface',
+            constants.ACTIONS: {
                 'create':
-                    {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {},
+                    {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                     constants.PARAMETER_TYPES: {},
                      constants.DO_ACTION: 'nnnn'},
                 'modify':
-                    {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {}},
+                    {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                     constants.PARAMETER_TYPES: {}},
                 'delete':
-                    {constants.ACTION_TYPE_KEY: constants.ActionType.UPDATE,
-                     constants.PARAMETER_TYPES_KEY: {}},
+                    {constants.ACTION_TYPE: constants.ActionType.UPDATE,
+                     constants.PARAMETER_TYPES: {}},
                 'get':{
-                    constants.ACTION_TYPE_KEY: constants.ActionType.QUERY,
-                    constants.PARAMETER_TYPES_KEY:{}
+                    constants.ACTION_TYPE: constants.ActionType.QUERY,
+                    constants.PARAMETER_TYPES:{}
                 }
             }
         }

@@ -20,6 +20,12 @@ def _get_message_from_update(resp_from_request):
 class Unity:
 
     def __init__(self, unity_ip, username='admin', password='Password123!'):
+        """
+        Initialize an instance of Unity and start session with Unity
+        :param unity_ip: Unity IP address
+        :param username: username on Unity system, for login
+        :param password: password for login
+        """
         self.hostname = unity_ip
         self.username = username
         self.password = password
@@ -40,10 +46,70 @@ class Unity:
         self._stop_session()
 
     def reset(self):
+        """
+        Reset variables like change, updateResults, queryResults and err
+        :return: None
+        """
         self.changed = False
         self.updateResults = []
         self.queryResults = []
         self.err = None
+
+    def update(self, action, resource_type, update_data):
+        """
+        Send requests that update Unity system: POST, DELETE
+        :param action: action name, same as in URL
+        :param resource_type: REST object
+        :param update_data: parameters for update, including 'id' of the an instance of object that you want to
+        update if it needs
+        :return: reply from Unity system
+        """
+        if action == 'create':
+            return self._create(resource_type, update_data)
+
+        if 'id' in update_data:
+            resource_id = update_data.get('id')
+            return self._do_action_with_existing_resource(resource_type, resource_id, action, update_data)
+
+        return self._do_specific_action(resource_type, action, update_data)
+
+    def query(self, resource_type, query_data):
+        """
+        Send GET requests
+        :param resource_type: REST object
+        :param query_data: parameters for get request, including 'id' ofan instance of object that you ask,
+        if you ask an instance
+        :return: reply from Unity system
+        """
+        instanceKeys = ['compact', 'fields', 'language']  # Instance query keys
+        collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page',
+                          'per_page', 'with_entrycount']
+        if 'id' in query_data:
+            url = '/api/instances/' + resource_type + '/' + query_data['id']
+            paramKeys = instanceKeys
+        else:
+            url = '/api/types/' + resource_type + '/instances'
+            paramKeys = collectionKeys
+        params = {key: query_data[key] for key in paramKeys if
+                  key in query_data}
+        if 'compact' not in params:
+            params['compact'] = 'true'  # By default, omit metadata from each instance in the query response
+
+        if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
+            params[
+                'with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
+        resp = self._do_get(url, params)
+        r = json.loads(resp.text)
+        result = {}
+
+        if 'id' in query_data:
+            result['id'] = query_data['id']
+            result.update(r['content'])
+        else:
+            result = []
+            for entry in r['entries']:
+                result.append(entry['content'])
+        return result
 
     def _create(self, resource_type, update):
         paramKeys = ['language', 'timeout']
@@ -84,47 +150,6 @@ class Unity:
 
         resp = self._do_post(url, args, params=params, msg=msg)
         return _get_message_from_update(resp)
-
-    def update(self, action, resource_type, update_data):
-        if action == 'create':
-            return self._create(resource_type, update_data)
-
-        if 'id' in update_data:
-            resource_id = update_data.get('id')
-            return self._do_action_with_existing_resource(resource_type, resource_id, action, update_data)
-
-        return self._do_specific_action(resource_type, action, update_data)
-
-    def query(self, resource_type, query_data):
-        instanceKeys = ['compact', 'fields', 'language']  # Instance query keys
-        collectionKeys = ['compact', 'fields', 'filter', 'groupby', 'language', 'orderby', 'page',
-                          'per_page', 'with_entrycount']
-        if 'id' in query_data:
-            url = '/api/instances/' + resource_type + '/' + query_data['id']
-            paramKeys = instanceKeys
-        else:
-            url = '/api/types/' + resource_type + '/instances'
-            paramKeys = collectionKeys
-        params = {key: query_data[key] for key in paramKeys if
-                  key in query_data}
-        if 'compact' not in params:
-            params['compact'] = 'true'  # By default, omit metadata from each instance in the query response
-
-        if 'id' not in query_data and 'with_entrycount' not in params:  # Collection query without the 'with_entrycount' parameter
-            params[
-                'with_entrycount'] = 'true'  # By default, return the entryCount response component in the response data.
-        resp = self._do_get(url, params)
-        r = json.loads(resp.text)
-        result = {}
-
-        if 'id' in query_data:  # TODO: check it
-            result['id'] = query_data['id']
-            result.update(r['content'])
-        else:
-            result = []
-            for entry in r['entries']:
-                result.append(entry['content'])
-        return result
 
     # def run_password_update(self, update):  # TODO: Fix it
     #    username = update.get('username')
@@ -204,7 +229,7 @@ class Unity:
         self._change_result(resp, url, args, changed=changed, msg=msg, **kwargs)
         return resp
 
-    def _do_delete(self, url, msg=None, **kwargs):  # TODO: remake it
+    def _do_delete(self, url, msg=None, **kwargs):
         kwargs = self._add_headers_to_kwargs(**kwargs)
         resp = self.session.delete(self.apibase + url, **kwargs)
         self._change_result(resp, url, msg=msg, **kwargs)

@@ -13,6 +13,15 @@ __email__ = "marsofandrew@gmail.com"
 
 
 def do_update_request(unity, params, params_types, rest_object, action):
+    """
+    Send POST and DELETE requests using common algorithm
+    :param unity: an instance of class Unity
+    :param params: params from *.yml file this params will be put into unity.update(...)
+    :param params_types: types of parameters, used by validator.check_parameters(...)
+    :param rest_object: REST object, will be put into unity.update(...)
+    :param action: name of action, it should be same as in URL, will be put into unity.update(...)
+    :return: reply from Unity system
+    """
     check_result = validator.check_parameters(params, params_types)
     if not check_result[constants.VALIDATOR_RESULT]:
         supportive_functions.raise_exception_about_parameters(check_result[constants.VALIDATOR_MESSAGE])
@@ -21,6 +30,14 @@ def do_update_request(unity, params, params_types, rest_object, action):
 
 
 def do_query_request(unity, params, params_types, rest_object):
+    """
+    Send GET requests
+    :param unity: an instance of class Unity
+    :param params: params from *.yml file this params will be put into unity.query(...)
+    :param params_types: now they are unused
+    :param rest_object: REST object, will be put into unity.query(...)
+    :return: reply from Unity system
+    """
     if params == {}:
         raise ValueError("input some parameters for GET request")
     reply = unity.query(rest_object, params)
